@@ -136,7 +136,7 @@ public class MainActivity extends FragmentActivity
         mLocationManager = (LocationManager) this.getSystemService(Context.LOCATION_SERVICE);
         Boolean mLocationEnabled = mLocationManager.isProviderEnabled(LocationManager.GPS_PROVIDER);
         if (!mLocationEnabled) {
-            Toast.makeText(this, "Location機能がOFFになっています。Location機能をONにして下さい。", Toast.LENGTH_LONG).show();
+            Toast.makeText(this, getString(R.string.error_location_setting), Toast.LENGTH_LONG).show();
             Intent settingIntent = new Intent(Settings.ACTION_LOCATION_SOURCE_SETTINGS);
             startActivity(settingIntent);
             return;
@@ -192,11 +192,11 @@ public class MainActivity extends FragmentActivity
             int result_count = results.length();
 
             if (result_count == 0) {
-                Toast.makeText(this, "近くに検索対象はありませんでした", Toast.LENGTH_LONG).show();
+                Toast.makeText(this, getString(R.string.info_not_found), Toast.LENGTH_LONG).show();
                 return;
             }
 
-            Toast.makeText(this, "読み込みが完了しました", Toast.LENGTH_LONG).show();
+            Toast.makeText(this, getString(R.string.info_load_completed), Toast.LENGTH_LONG).show();
             for (int i = 0; i < result_count; i++) {
                 String name = results.getJSONObject(i).getString("name");
                 Double lat = results.getJSONObject(i).getJSONObject("geometry").getJSONObject("location").getDouble("lat");
