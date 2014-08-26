@@ -55,8 +55,6 @@ public class MainActivity extends FragmentActivity
 
     private static final int ZOOM = 15;
     private static final String TAG = MainActivity.class.getSimpleName();
-    private static final String URL_BASE =
-        "https://maps.googleapis.com/maps/api/place/textsearch/json?radius=500&sensor=true&language=ja";
 
     @Override
     protected void onCreate(Bundle savedInstanceState) {
@@ -158,8 +156,8 @@ public class MainActivity extends FragmentActivity
     private void fetchPlaces() {
         RequestQueue mQueue;
         mQueue = Volley.newRequestQueue(this);
-        String location = "&location=" + mCurrentPosition.getLat() + "," + mCurrentPosition.getLng();
-        String url = URL_BASE + location + "&query=" + encode("神社") + "&key=" + mGooglePlaceAPIKey;
+        GoogleMapApiClient googleMapiApiClient = new GoogleMapApiClient(this, mCurrentPosition);
+        String url = googleMapiApiClient.getRequestUrl();
         mQueue.add(new JsonObjectRequest(Request.Method.GET, url,
                 null, this, this
         ));
