@@ -1,6 +1,8 @@
 package xyz.yyagi.onetouchsearch;
 
 import android.content.Context;
+import android.content.SharedPreferences;
+import android.preference.PreferenceManager;
 
 /**
  * Created by yaginuma on 14/08/20.
@@ -9,6 +11,7 @@ public class GoogleMapApiClient {
     private Context mContext;
     private Position mPosition;
     private String mGooglePlaceAPIKey;
+    private String mSearchWord;
 
     private static final String URL_BASE =
             "https://maps.googleapis.com/maps/api/place/textsearch/json?radius=500&sensor=true&language=ja";
@@ -17,17 +20,15 @@ public class GoogleMapApiClient {
         this.mContext = context;
         this.mPosition = position;
         this.mGooglePlaceAPIKey = context.getString(R.string.google_place_api_key);
+
+        SharedPreferences sharedPreferences = PreferenceManager.getDefaultSharedPreferences(mContext);
+        this.mSearchWord = sharedPreferences.getString(mContext.getString(R.string.pref_search_word_key), "");
+
     }
 
     public String getRequestUrl() {
         String location = "&location=" + mPosition.getLat() + "," + mPosition.getLng();
-        String url = URL_BASE + location + "&query=" + getSearchWord() + "&key=" + mGooglePlaceAPIKey;
+        String url = URL_BASE + location + "&query=" + Util.encode(this.mSearchWord) + "&key=" + mGooglePlaceAPIKey;
         return url;
-    }
-
-
-    private String getSearchWord() {
-        String searchWord = "神社"; // TODO: 値を設定画面から取得出来るようにする
-        return Util.encode(searchWord);
     }
 }

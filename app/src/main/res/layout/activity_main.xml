@@ -18,10 +18,10 @@
         android:visibility="gone"/>
 
     <fragment
-    android:layout_width="fill_parent"
-    android:layout_height="fill_parent"
-    android:id="@+id/map"
-    tools:context=".MainActivity"
-    android:name="com.google.android.gms.maps.SupportMapFragment"/>
+        android:layout_width="fill_parent"
+        android:layout_height="fill_parent"
+        android:id="@+id/map"
+        tools:context=".MainActivity"
+        android:name="com.google.android.gms.maps.SupportMapFragment"/>
 
 </RelativeLayout>
