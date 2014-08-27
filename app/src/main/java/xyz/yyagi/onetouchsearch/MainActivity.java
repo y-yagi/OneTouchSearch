@@ -216,16 +216,6 @@ public class MainActivity extends FragmentActivity
         error.printStackTrace();
     }
 
-    private String encode(String str) {
-        String result = "";
-        try {
-            result = URLEncoder.encode(str, "UTF-8");
-        } catch(UnsupportedEncodingException e) {
-            e.printStackTrace();
-        }
-        return  result;
-    }
-
     /**
      * Shows the progress UI
      */
