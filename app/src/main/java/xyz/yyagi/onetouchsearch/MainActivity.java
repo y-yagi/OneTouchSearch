@@ -34,6 +34,7 @@ import org.json.JSONObject;
 
 import xyz.yyagi.onetouchsearch.api.GoogleMapApiClient;
 import xyz.yyagi.onetouchsearch.api.GoogleMapOperator;
+import xyz.yyagi.onetouchsearch.api.GoogleMapTextSearchApiResult;
 
 public class MainActivity extends FragmentActivity
         implements LocationListener , Response.Listener<JSONObject>, Response.ErrorListener {
@@ -157,19 +158,17 @@ public class MainActivity extends FragmentActivity
     @Override
     public void onResponse(JSONObject response) {
         try {
-            JSONArray results = response.getJSONArray("results");
-            int result_count = results.length();
-
-            if (result_count == 0) {
+            GoogleMapTextSearchApiResult apiResult = new GoogleMapTextSearchApiResult(response);
+            if (apiResult.resultCount() == 0) {
                 Toast.makeText(this, getString(R.string.info_not_found), Toast.LENGTH_LONG).show();
                 return;
             }
 
             Toast.makeText(this, getString(R.string.info_load_completed), Toast.LENGTH_LONG).show();
-            for (int i = 0; i < result_count; i++) {
-                String name = results.getJSONObject(i).getString("name");
-                Double lat = results.getJSONObject(i).getJSONObject("geometry").getJSONObject("location").getDouble("lat");
-                Double lng = results.getJSONObject(i).getJSONObject("geometry").getJSONObject("location").getDouble("lng");
+            for (int i = 0; i < apiResult.resultCount(); i++) {
+                String name = apiResult.getName(i);
+                Double lat  = apiResult.getLat(i);
+                Double lng  = apiResult.getLng(i);
                 mMapOperator.addMarkerToMap(name, lat, lng);
             }
 
