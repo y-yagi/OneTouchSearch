@@ -1,8 +1,12 @@
-package xyz.yyagi.onetouchsearch;
+package xyz.yyagi.onetouchsearch.api;
 
 import android.content.Context;
 import android.content.SharedPreferences;
 import android.preference.PreferenceManager;
+
+import xyz.yyagi.onetouchsearch.Position;
+import xyz.yyagi.onetouchsearch.R;
+import xyz.yyagi.onetouchsearch.Util;
 
 /**
  * Created by yaginuma on 14/08/20.

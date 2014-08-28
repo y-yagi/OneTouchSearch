@@ -3,13 +3,11 @@ package xyz.yyagi.onetouchsearch;
 import android.animation.Animator;
 import android.animation.AnimatorListenerAdapter;
 import android.annotation.TargetApi;
-import android.app.Fragment;
 import android.content.Context;
 import android.content.Intent;
 import android.location.Location;
 import android.location.LocationManager;
 import android.os.Build;
-import android.provider.ContactsContract;
 import android.provider.Settings;
 import android.support.v4.app.FragmentActivity;
 import android.os.Bundle;
@@ -27,35 +25,28 @@ import com.android.volley.Response;
 import com.android.volley.VolleyError;
 import com.android.volley.toolbox.JsonObjectRequest;
 import com.android.volley.toolbox.Volley;
-import com.google.android.gms.maps.CameraUpdate;
-import com.google.android.gms.maps.CameraUpdateFactory;
 import com.google.android.gms.maps.GoogleMap;
 import com.google.android.gms.maps.SupportMapFragment;
-import com.google.android.gms.maps.model.BitmapDescriptorFactory;
-import com.google.android.gms.maps.model.LatLng;
-import com.google.android.gms.maps.model.Marker;
-import com.google.android.gms.maps.model.MarkerOptions;
 
 import org.json.JSONArray;
 import org.json.JSONException;
 import org.json.JSONObject;
 
-import java.io.UnsupportedEncodingException;
-import java.net.URLEncoder;
+import xyz.yyagi.onetouchsearch.api.GoogleMapApiClient;
+import xyz.yyagi.onetouchsearch.api.GoogleMapOperator;
+import xyz.yyagi.onetouchsearch.api.GoogleMapTextSearchApiResult;
 
 public class MainActivity extends FragmentActivity
         implements LocationListener , Response.Listener<JSONObject>, Response.ErrorListener {
 
-    private GoogleMap mMap; // Might be null if Google Play services APK is not available.
     public LocationManager mLocationManager;
-    private boolean mDisplayedMarker = false;
-    private Marker mCurrentPosMarker = null;
+    private boolean mDisplayedMarker = false;;
     private String mGooglePlaceAPIKey;
     private Position mCurrentPosition;
     private View mProgressView;
     private View mMapFragment;
+    private GoogleMapOperator mMapOperator;
 
-    private static final int ZOOM = 15;
     private static final String TAG = MainActivity.class.getSimpleName();
 
     @Override
@@ -70,7 +61,6 @@ public class MainActivity extends FragmentActivity
         showProgress(true);
         setLocationProvider();
         setUpMapIfNeeded();
-        setCurrentPosMarkerToMap(mCurrentPosition.getLat(), mCurrentPosition.getLng());
     }
 
     @Override
@@ -109,27 +99,13 @@ public class MainActivity extends FragmentActivity
     }
 
     private void setUpMapIfNeeded() {
-        // Do a null check to confirm that we have not already instantiated the map.
-        if (mMap == null) {
-            // Try to obtain the map from the SupportMapFragment.
-            mMap = ((SupportMapFragment) getSupportFragmentManager().findFragmentById(R.id.map))
+        if (mMapOperator == null) {
+            GoogleMap map = ((SupportMapFragment) getSupportFragmentManager().findFragmentById(R.id.map))
                     .getMap();
-            moveCamera();
+            mMapOperator = new GoogleMapOperator(map);
+            mMapOperator.moveCamera(mCurrentPosition);
+            mMapOperator.setCurrentPosMarkerToMap(mCurrentPosition);
         }
-    }
-
-    private void addMarkerToMap(String title, Double lat, Double lng) {
-        mMap.addMarker(new MarkerOptions().position(new LatLng(lat, lng)).title(title));
-    }
-
-    private void setCurrentPosMarkerToMap(Double lat, Double lng) {
-        if (mCurrentPosMarker != null) {
-            mCurrentPosMarker.remove();
-        }
-
-        mCurrentPosMarker = mMap.addMarker(new MarkerOptions()
-                                .position(new LatLng(lat, lng))
-                                .icon(BitmapDescriptorFactory.fromResource(R.drawable.current)));
     }
 
     private void setLocationProvider() {
@@ -152,10 +128,10 @@ public class MainActivity extends FragmentActivity
 
         if (!mDisplayedMarker) {
             fetchPlaces();
-            moveCamera();
+            mMapOperator.moveCamera(mCurrentPosition);
             mDisplayedMarker = true;
         }
-        setCurrentPosMarkerToMap(mCurrentPosition.getLat(), mCurrentPosition.getLng());
+        mMapOperator.setCurrentPosMarkerToMap(mCurrentPosition);
     }
 
     @Override
@@ -170,12 +146,6 @@ public class MainActivity extends FragmentActivity
     public void onStatusChanged(String provider, int status, Bundle extras) {
     }
 
-    private void moveCamera() {
-        CameraUpdate cu = CameraUpdateFactory.newLatLngZoom(
-                new LatLng(mCurrentPosition.getLat(), mCurrentPosition.getLng()), ZOOM);
-        mMap.moveCamera(cu);
-    }
-
     private void fetchPlaces() {
         RequestQueue mQueue;
         mQueue = Volley.newRequestQueue(this);
@@ -188,20 +158,18 @@ public class MainActivity extends FragmentActivity
     @Override
     public void onResponse(JSONObject response) {
         try {
-            JSONArray results = response.getJSONArray("results");
-            int result_count = results.length();
-
-            if (result_count == 0) {
+            GoogleMapTextSearchApiResult apiResult = new GoogleMapTextSearchApiResult(response);
+            if (apiResult.resultCount() == 0) {
                 Toast.makeText(this, getString(R.string.info_not_found), Toast.LENGTH_LONG).show();
                 return;
             }
 
             Toast.makeText(this, getString(R.string.info_load_completed), Toast.LENGTH_LONG).show();
-            for (int i = 0; i < result_count; i++) {
-                String name = results.getJSONObject(i).getString("name");
-                Double lat = results.getJSONObject(i).getJSONObject("geometry").getJSONObject("location").getDouble("lat");
-                Double lng = results.getJSONObject(i).getJSONObject("geometry").getJSONObject("location").getDouble("lng");
-                addMarkerToMap(name, lat, lng);
+            for (int i = 0; i < apiResult.resultCount(); i++) {
+                String name = apiResult.getName(i);
+                Double lat  = apiResult.getLat(i);
+                Double lng  = apiResult.getLng(i);
+                mMapOperator.addMarkerToMap(name, lat, lng);
             }
 
         } catch (JSONException e ) {
