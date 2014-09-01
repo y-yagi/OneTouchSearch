@@ -13,6 +13,7 @@ import android.support.v4.app.FragmentActivity;
 import android.os.Bundle;
 
 import android.location.LocationListener;
+import android.text.TextUtils;
 import android.util.Log;
 import android.view.Menu;
 import android.view.MenuItem;
@@ -46,34 +47,50 @@ public class MainActivity extends FragmentActivity
     private View mProgressView;
     private View mMapFragment;
     private GoogleMapOperator mMapOperator;
+    private GoogleMapApiClient mMapApiClient;
 
     private static final String TAG = MainActivity.class.getSimpleName();
 
     @Override
     protected void onCreate(Bundle savedInstanceState) {
         super.onCreate(savedInstanceState);
-        setContentView(R.layout.activity_main);
         mGooglePlaceAPIKey = getString(R.string.google_place_api_key);
         mCurrentPosition = new Position(this);
+        mMapApiClient = new GoogleMapApiClient(this, mCurrentPosition);
+
+        setContentView(R.layout.activity_main);
         mProgressView = findViewById(R.id.progress);
         mMapFragment = findViewById(R.id.map) ;
 
+        if (TextUtils.isEmpty(mMapApiClient.getSearchWord())) {
+            Intent settingIntent = new Intent(this, SettingsActivity.class);
+            startActivity(settingIntent);
+            return;
+        }
+
+        setUpMapIfNeeded();
         showProgress(true);
         setLocationProvider();
-        setUpMapIfNeeded();
     }
 
     @Override
     protected void onResume() {
         super.onResume();
+
+        mMapApiClient.setup();
         setUpMapIfNeeded();
+        showProgress(true);
+        setLocationProvider();
     }
 
     @Override
     protected void onStop() {
+        super.onStop();
+        if (mLocationManager == null) {
+            return;
+        }
         mLocationManager.removeUpdates(this);
         mCurrentPosition.apply();
-        super.onStop();
     }
 
 
@@ -149,8 +166,7 @@ public class MainActivity extends FragmentActivity
     private void fetchPlaces() {
         RequestQueue mQueue;
         mQueue = Volley.newRequestQueue(this);
-        GoogleMapApiClient googleMapiApiClient = new GoogleMapApiClient(this, mCurrentPosition);
-        String url = googleMapiApiClient.getRequestUrl();
+        String url = mMapApiClient.getRequestUrl();
         mQueue.add(new JsonObjectRequest(Request.Method.GET, url,
                 null, this, this
         ));

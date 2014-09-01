@@ -1,7 +1,8 @@
 <resources>
     <string name="title_activity_settings">設定</string>
     <!-- Strings related to Settings -->
-    <string name="pref_header_general">General</string>
+    <string name="pref_header_search">検索ワード</string>
+    <string name="pref_header_search_detail">検索したいワードを設定して下さい。キーワードは2つまで設定可能です。</string>
     <string name="pref_title_search_word">検索ワード</string>
     <string name="pref_hint_search_word">検索したいワードを入力して下さい</string>
 </resources>
