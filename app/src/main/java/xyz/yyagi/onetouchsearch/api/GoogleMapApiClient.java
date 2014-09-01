@@ -16,6 +16,7 @@ public class GoogleMapApiClient {
     private Position mPosition;
     private String mGooglePlaceAPIKey;
     private String mSearchWord;
+    private SharedPreferences mSharedPrefereces;
 
     private static final String URL_BASE =
             "https://maps.googleapis.com/maps/api/place/textsearch/json?radius=500&sensor=true&language=ja";
@@ -25,9 +26,16 @@ public class GoogleMapApiClient {
         this.mPosition = position;
         this.mGooglePlaceAPIKey = context.getString(R.string.google_place_api_key);
 
-        SharedPreferences sharedPreferences = PreferenceManager.getDefaultSharedPreferences(mContext);
-        this.mSearchWord = sharedPreferences.getString(mContext.getString(R.string.pref_search_word_key), "");
+        this.mSharedPrefereces= PreferenceManager.getDefaultSharedPreferences(mContext);
+        setup();
+    }
 
+    public String getSearchWord() {
+        return this.mSearchWord;
+    }
+
+    public void setup() {
+        this.mSearchWord = mSharedPrefereces.getString(mContext.getString(R.string.pref_search_word_key), "");
     }
 
     public String getRequestUrl() {
