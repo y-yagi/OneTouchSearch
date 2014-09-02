@@ -3,7 +3,9 @@
     <!-- Strings related to Settings -->
     <string name="pref_header_search">Search Words</string>
     <string name="pref_header_search_detail">Please set the keyword that you want to search. The keyword is setable to two.</string>
-    <string name="pref_search_word_key">search_word</string>
-    <string name="pref_title_search_word">Search Word</string>
+    <string name="pref_search_word1_key">search_word1</string>
+    <string name="pref_search_word2_key">search_word2</string>
+    <string name="pref_title_search_word1">Search Word1</string>
+    <string name="pref_title_search_word2">Search Word2</string>
     <string name="pref_hint_search_word">input the keyword that you want to search</string>
 </resources>

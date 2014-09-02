@@ -62,7 +62,7 @@ public class MainActivity extends FragmentActivity
         mProgressView = findViewById(R.id.progress);
         mMapFragment = findViewById(R.id.map) ;
 
-        if (TextUtils.isEmpty(mMapApiClient.getSearchWord())) {
+        if (mMapApiClient.getSearchWordList().isEmpty()) {
             Intent settingIntent = new Intent(this, SettingsActivity.class);
             startActivity(settingIntent);
             return;
@@ -166,10 +166,12 @@ public class MainActivity extends FragmentActivity
     private void fetchPlaces() {
         RequestQueue mQueue;
         mQueue = Volley.newRequestQueue(this);
-        String url = mMapApiClient.getRequestUrl();
-        mQueue.add(new JsonObjectRequest(Request.Method.GET, url,
-                null, this, this
-        ));
+        for(String url : mMapApiClient.getRequestUrlList()) {
+            mQueue.add(new JsonObjectRequest(Request.Method.GET, url,
+                    null, this, this
+            ));
+
+        }
     }
     @Override
     public void onResponse(JSONObject response) {
