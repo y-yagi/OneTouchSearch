@@ -4,8 +4,14 @@
     android:shape="ring"
     android:thickness="10dp"
     android:useLevel="false" >
+    <!--
     <gradient
-        android:endColor="#000083e5"
-        android:startColor="#ff0083e5"
+        android:endColor="#0000ff7f"
+        android:startColor="#ff00ff7f"
+        android:type="sweep" />
+        -->
+    <gradient
+        android:endColor="#0015b8d7"
+        android:startColor="#15b8d7"
         android:type="sweep" />
 </shape>
