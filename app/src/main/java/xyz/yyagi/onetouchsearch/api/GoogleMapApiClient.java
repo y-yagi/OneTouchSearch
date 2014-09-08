@@ -3,6 +3,15 @@ package xyz.yyagi.onetouchsearch.api;
 import android.content.Context;
 import android.content.SharedPreferences;
 import android.preference.PreferenceManager;
+import android.text.TextUtils;
+
+import com.google.android.gms.maps.model.BitmapDescriptor;
+import com.google.android.gms.maps.model.BitmapDescriptorFactory;
+
+import java.util.ArrayList;
+import java.util.Arrays;
+import java.util.HashMap;
+import java.util.List;
 
 import xyz.yyagi.onetouchsearch.Position;
 import xyz.yyagi.onetouchsearch.R;
@@ -15,7 +24,8 @@ public class GoogleMapApiClient {
     private Context mContext;
     private Position mPosition;
     private String mGooglePlaceAPIKey;
-    private String mSearchWord;
+    private ArrayList<String> mSearchWordList;
+    private List<Float> mColorList;
     private SharedPreferences mSharedPrefereces;
 
     private static final String URL_BASE =
@@ -25,22 +35,43 @@ public class GoogleMapApiClient {
         this.mContext = context;
         this.mPosition = position;
         this.mGooglePlaceAPIKey = context.getString(R.string.google_place_api_key);
+        this.mSearchWordList = new ArrayList<String>();
+        this.mColorList = Arrays.asList(BitmapDescriptorFactory.HUE_ORANGE, BitmapDescriptorFactory.HUE_AZURE);
 
         this.mSharedPrefereces= PreferenceManager.getDefaultSharedPreferences(mContext);
         setup();
     }
 
-    public String getSearchWord() {
-        return this.mSearchWord;
+    public ArrayList getSearchWordList() {
+        return this.mSearchWordList;
+    }
+
+    public float getIconColor(int index) {
+        return this.mColorList.get(index);
     }
 
     public void setup() {
-        this.mSearchWord = mSharedPrefereces.getString(mContext.getString(R.string.pref_search_word_key), "");
+        mSearchWordList.clear();
+
+        String searhWord = mSharedPrefereces.getString(mContext.getString(R.string.pref_search_word1_key), "");
+        if (!TextUtils.isEmpty(searhWord)) {
+            mSearchWordList.add(searhWord);
+        }
+
+        searhWord = mSharedPrefereces.getString(mContext.getString(R.string.pref_search_word2_key), "");
+        if (!TextUtils.isEmpty(searhWord)) {
+            mSearchWordList.add(searhWord);
+        }
     }
 
-    public String getRequestUrl() {
+    public ArrayList<String> getRequestUrlList() {
         String location = "&location=" + mPosition.getLat() + "," + mPosition.getLng();
-        String url = URL_BASE + location + "&query=" + Util.encode(this.mSearchWord) + "&key=" + mGooglePlaceAPIKey;
-        return url;
+        String base = URL_BASE + location + "&key=" + mGooglePlaceAPIKey;
+        ArrayList requestUrlList = new ArrayList<String>();
+
+        for(String searchWord: mSearchWordList) {
+            requestUrlList.add(base + "&query=" + Util.encode(searchWord));
+        }
+        return requestUrlList;
     }
 }
