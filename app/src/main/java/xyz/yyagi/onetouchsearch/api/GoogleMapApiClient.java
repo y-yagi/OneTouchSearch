@@ -5,7 +5,13 @@ import android.content.SharedPreferences;
 import android.preference.PreferenceManager;
 import android.text.TextUtils;
 
+import com.google.android.gms.maps.model.BitmapDescriptor;
+import com.google.android.gms.maps.model.BitmapDescriptorFactory;
+
 import java.util.ArrayList;
+import java.util.Arrays;
+import java.util.HashMap;
+import java.util.List;
 
 import xyz.yyagi.onetouchsearch.Position;
 import xyz.yyagi.onetouchsearch.R;
@@ -19,6 +25,7 @@ public class GoogleMapApiClient {
     private Position mPosition;
     private String mGooglePlaceAPIKey;
     private ArrayList<String> mSearchWordList;
+    private List<Float> mColorList;
     private SharedPreferences mSharedPrefereces;
 
     private static final String URL_BASE =
@@ -29,6 +36,7 @@ public class GoogleMapApiClient {
         this.mPosition = position;
         this.mGooglePlaceAPIKey = context.getString(R.string.google_place_api_key);
         this.mSearchWordList = new ArrayList<String>();
+        this.mColorList = Arrays.asList(BitmapDescriptorFactory.HUE_ORANGE, BitmapDescriptorFactory.HUE_AZURE);
 
         this.mSharedPrefereces= PreferenceManager.getDefaultSharedPreferences(mContext);
         setup();
@@ -36,6 +44,10 @@ public class GoogleMapApiClient {
 
     public ArrayList getSearchWordList() {
         return this.mSearchWordList;
+    }
+
+    public float getIconColor(int index) {
+        return this.mColorList.get(index);
     }
 
     public void setup() {
