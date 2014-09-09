@@ -3,6 +3,7 @@ package xyz.yyagi.onetouchsearch.api;
 import com.google.android.gms.maps.CameraUpdate;
 import com.google.android.gms.maps.CameraUpdateFactory;
 import com.google.android.gms.maps.GoogleMap;
+import com.google.android.gms.maps.model.BitmapDescriptor;
 import com.google.android.gms.maps.model.BitmapDescriptorFactory;
 import com.google.android.gms.maps.model.LatLng;
 import com.google.android.gms.maps.model.Marker;
@@ -23,8 +24,8 @@ public class GoogleMapOperator {
         this.mMap = mMap;
     }
 
-    public void addMarkerToMap(String title, Double lat, Double lng) {
-        mMap.addMarker(new MarkerOptions().position(new LatLng(lat, lng)).title(title));
+    public void addMarkerToMap(String title, Double lat, Double lng, BitmapDescriptor icon) {
+        mMap.addMarker(new MarkerOptions().position(new LatLng(lat, lng)).title(title).icon(icon));
     }
 
     public void setCurrentPosMarkerToMap(Position pos) {

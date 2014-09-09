@@ -3,6 +3,7 @@
     <!-- Strings related to Settings -->
     <string name="pref_header_search">検索ワード</string>
     <string name="pref_header_search_detail">検索したいワードを設定して下さい。キーワードは2つまで設定可能です。</string>
-    <string name="pref_title_search_word">検索ワード</string>
+    <string name="pref_title_search_word1">検索ワード1</string>
+    <string name="pref_title_search_word2">検索ワード2</string>
     <string name="pref_hint_search_word">検索したいワードを入力して下さい</string>
 </resources>

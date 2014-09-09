@@ -5,6 +5,6 @@
     <string name="action_settings">設定</string>
 
     <string name="error_location_setting">Location機能がOFFになっています。Location機能をONにして下さい。</string>
-    <string name="info_not_found">検索対象は見つかりませんでした</string>
+    <string name="info_not_found">検索対象は見つかりませんでした。検索キーワード: </string>
     <string name="info_load_completed">読み込みが完了しました</string>
 </resources>

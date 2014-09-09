@@ -27,7 +27,9 @@ import com.android.volley.VolleyError;
 import com.android.volley.toolbox.JsonObjectRequest;
 import com.android.volley.toolbox.Volley;
 import com.google.android.gms.maps.GoogleMap;
+import com.google.android.gms.maps.MapsInitializer;
 import com.google.android.gms.maps.SupportMapFragment;
+import com.google.android.gms.maps.model.BitmapDescriptorFactory;
 
 import org.json.JSONArray;
 import org.json.JSONException;
@@ -50,6 +52,7 @@ public class MainActivity extends FragmentActivity
     private GoogleMapApiClient mMapApiClient;
 
     private static final String TAG = MainActivity.class.getSimpleName();
+    private int mResponseCounter = 0;
 
     @Override
     protected void onCreate(Bundle savedInstanceState) {
@@ -62,7 +65,7 @@ public class MainActivity extends FragmentActivity
         mProgressView = findViewById(R.id.progress);
         mMapFragment = findViewById(R.id.map) ;
 
-        if (TextUtils.isEmpty(mMapApiClient.getSearchWord())) {
+        if (mMapApiClient.getSearchWordList().isEmpty()) {
             Intent settingIntent = new Intent(this, SettingsActivity.class);
             startActivity(settingIntent);
             return;
@@ -166,17 +169,23 @@ public class MainActivity extends FragmentActivity
     private void fetchPlaces() {
         RequestQueue mQueue;
         mQueue = Volley.newRequestQueue(this);
-        String url = mMapApiClient.getRequestUrl();
-        mQueue.add(new JsonObjectRequest(Request.Method.GET, url,
-                null, this, this
-        ));
+        for(String url : mMapApiClient.getRequestUrlList()) {
+            mQueue.add(new JsonObjectRequest(Request.Method.GET, url,
+                    null, this, this
+            ));
+
+        }
     }
     @Override
     public void onResponse(JSONObject response) {
         try {
             GoogleMapTextSearchApiResult apiResult = new GoogleMapTextSearchApiResult(response);
             if (apiResult.resultCount() == 0) {
-                Toast.makeText(this, getString(R.string.info_not_found), Toast.LENGTH_LONG).show();
+                Toast.makeText(
+                        this,
+                        getString(R.string.info_not_found) + mMapApiClient.getSearchWordList().get(mResponseCounter),
+                        Toast.LENGTH_LONG
+                ).show();
                 return;
             }
 
@@ -185,13 +194,15 @@ public class MainActivity extends FragmentActivity
                 String name = apiResult.getName(i);
                 Double lat  = apiResult.getLat(i);
                 Double lng  = apiResult.getLng(i);
-                mMapOperator.addMarkerToMap(name, lat, lng);
+                mMapOperator.addMarkerToMap(name, lat, lng,
+                        BitmapDescriptorFactory.defaultMarker(mMapApiClient.getIconColor(mResponseCounter)));
             }
 
         } catch (JSONException e ) {
             Log.e(TAG, "Data parse error");
             e.printStackTrace();
         }
+        mResponseCounter++;
     }
 
     @Override

@@ -63,7 +63,7 @@ public class SettingsActivity extends PreferenceActivity {
 
         addPreferencesFromResource(R.xml.pref_general);
         SharedPreferences sharedPreferences = PreferenceManager.getDefaultSharedPreferences(this);
-        String searchWord = sharedPreferences.getString(getString(R.string.pref_search_word_key), "");
+        String searchWord = sharedPreferences.getString(getString(R.string.pref_search_word1_key), "");
         if (TextUtils.isEmpty(searchWord)) {
             Toast.makeText(this, getString(R.string.pref_header_search_detail), Toast.LENGTH_LONG).show();
         }
