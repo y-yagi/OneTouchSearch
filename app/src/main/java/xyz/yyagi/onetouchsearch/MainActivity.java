@@ -43,7 +43,7 @@ public class MainActivity extends FragmentActivity
         implements LocationListener , Response.Listener<JSONObject>, Response.ErrorListener {
 
     public LocationManager mLocationManager;
-    private boolean mDisplayedMarker = false;;
+    private boolean mDisplayedMarker = false;
     private String mGooglePlaceAPIKey;
     private Position mCurrentPosition;
     private View mProgressView;
@@ -72,7 +72,6 @@ public class MainActivity extends FragmentActivity
         }
 
         setUpMapIfNeeded();
-        showProgress(true);
         setLocationProvider();
     }
 
@@ -82,8 +81,6 @@ public class MainActivity extends FragmentActivity
 
         mMapApiClient.setup();
         setUpMapIfNeeded();
-        showProgress(true);
-        setLocationProvider();
     }
 
     @Override
@@ -120,6 +117,7 @@ public class MainActivity extends FragmentActivity
 
     private void setUpMapIfNeeded() {
         if (mMapOperator == null) {
+            showProgress(true);
             GoogleMap map = ((SupportMapFragment) getSupportFragmentManager().findFragmentById(R.id.map))
                     .getMap();
             mMapOperator = new GoogleMapOperator(map);
