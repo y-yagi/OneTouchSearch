@@ -1,4 +1,4 @@
-package xyz.yyagi.onetouchsearch;
+package xyz.yyagi.onetouchsearch.models;
 
 import android.content.Context;
 import android.content.SharedPreferences;

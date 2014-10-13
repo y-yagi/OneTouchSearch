@@ -5,15 +5,13 @@ import android.content.SharedPreferences;
 import android.preference.PreferenceManager;
 import android.text.TextUtils;
 
-import com.google.android.gms.maps.model.BitmapDescriptor;
 import com.google.android.gms.maps.model.BitmapDescriptorFactory;
 
 import java.util.ArrayList;
 import java.util.Arrays;
-import java.util.HashMap;
 import java.util.List;
 
-import xyz.yyagi.onetouchsearch.Position;
+import xyz.yyagi.onetouchsearch.models.Position;
 import xyz.yyagi.onetouchsearch.R;
 import xyz.yyagi.onetouchsearch.Util;
 
