@@ -13,13 +13,16 @@ import android.support.v4.app.FragmentActivity;
 import android.os.Bundle;
 
 import android.location.LocationListener;
-import android.text.TextUtils;
 import android.util.Log;
 import android.view.Menu;
 import android.view.MenuItem;
 import android.view.View;
 import android.widget.Toast;
 
+import com.activeandroid.ActiveAndroid;
+import com.activeandroid.Model;
+import com.activeandroid.query.Delete;
+import com.activeandroid.query.Select;
 import com.android.volley.Request;
 import com.android.volley.RequestQueue;
 import com.android.volley.Response;
@@ -27,17 +30,19 @@ import com.android.volley.VolleyError;
 import com.android.volley.toolbox.JsonObjectRequest;
 import com.android.volley.toolbox.Volley;
 import com.google.android.gms.maps.GoogleMap;
-import com.google.android.gms.maps.MapsInitializer;
 import com.google.android.gms.maps.SupportMapFragment;
 import com.google.android.gms.maps.model.BitmapDescriptorFactory;
 
-import org.json.JSONArray;
 import org.json.JSONException;
 import org.json.JSONObject;
+
+import java.util.List;
 
 import xyz.yyagi.onetouchsearch.api.GoogleMapApiClient;
 import xyz.yyagi.onetouchsearch.api.GoogleMapOperator;
 import xyz.yyagi.onetouchsearch.api.GoogleMapTextSearchApiResult;
+import xyz.yyagi.onetouchsearch.models.Place;
+import xyz.yyagi.onetouchsearch.models.Position;
 
 public class MainActivity extends FragmentActivity
         implements LocationListener , Response.Listener<JSONObject>, Response.ErrorListener {
@@ -53,10 +58,12 @@ public class MainActivity extends FragmentActivity
 
     private static final String TAG = MainActivity.class.getSimpleName();
     private int mResponseCounter = 0;
+    private boolean mHasOldData = false;
 
     @Override
     protected void onCreate(Bundle savedInstanceState) {
         super.onCreate(savedInstanceState);
+        ActiveAndroid.initialize(this);
         mGooglePlaceAPIKey = getString(R.string.google_place_api_key);
         mCurrentPosition = new Position(this);
         mMapApiClient = new GoogleMapApiClient(this, mCurrentPosition);
@@ -71,7 +78,14 @@ public class MainActivity extends FragmentActivity
             return;
         }
 
+
         setUpMapIfNeeded();
+        if (hasOldData()) {
+            displayOldData();
+            Toast.makeText(this, getString(R.string.info_loading), Toast.LENGTH_LONG).show();
+        } else {
+            showProgress(true);
+        }
         setLocationProvider();
     }
 
@@ -117,9 +131,8 @@ public class MainActivity extends FragmentActivity
 
     private void setUpMapIfNeeded() {
         if (mMapOperator == null) {
-            showProgress(true);
-            GoogleMap map = ((SupportMapFragment) getSupportFragmentManager().findFragmentById(R.id.map))
-                    .getMap();
+            GoogleMap map = ((SupportMapFragment) getSupportFragmentManager()
+                    .findFragmentById(R.id.map)).getMap();
             mMapOperator = new GoogleMapOperator(map);
             mMapOperator.moveCamera(mCurrentPosition);
             mMapOperator.setCurrentPosMarkerToMap(mCurrentPosition);
@@ -194,6 +207,8 @@ public class MainActivity extends FragmentActivity
                 Double lng  = apiResult.getLng(i);
                 mMapOperator.addMarkerToMap(name, lat, lng,
                         BitmapDescriptorFactory.defaultMarker(mMapApiClient.getIconColor(mResponseCounter)));
+                Place place = new Place(name, lat, lng, mResponseCounter);
+                place.save();
             }
 
         } catch (JSONException e ) {
@@ -233,6 +248,19 @@ public class MainActivity extends FragmentActivity
                 mProgressView.setVisibility(show ? View.VISIBLE : View.GONE);
             }
         });
+    }
+
+    private boolean hasOldData() {
+        return (new Select().from(Place.class).count() > 0) ? true : false;
+    }
+
+    private void displayOldData() {
+        List<Place> places = new Select().from(Place.class).execute();
+        for (Place place : places) {
+            mMapOperator.addMarkerToMap(place.name, place.latitude, place.longitude,
+                    BitmapDescriptorFactory.defaultMarker(mMapApiClient.getIconColor(place.type)));
+        }
+        new Delete().from(Place.class).execute();
     }
 }
 
