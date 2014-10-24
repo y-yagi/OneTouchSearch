@@ -9,7 +9,7 @@ import com.google.android.gms.maps.model.LatLng;
 import com.google.android.gms.maps.model.Marker;
 import com.google.android.gms.maps.model.MarkerOptions;
 
-import xyz.yyagi.onetouchsearch.Position;
+import xyz.yyagi.onetouchsearch.models.Position;
 import xyz.yyagi.onetouchsearch.R;
 
 /**
