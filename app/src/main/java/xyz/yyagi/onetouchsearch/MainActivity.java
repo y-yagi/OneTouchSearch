@@ -53,6 +53,8 @@ public class MainActivity extends FragmentActivity
     private GoogleMapApiClient mMapApiClient;
 
     private static final String TAG = MainActivity.class.getSimpleName();
+    private static final double DISTANCE_CHECK_THRESHOLD = 50.0;
+
     private int mResponseCounter = 0;
     private PlaceDataManager mPlaceDataManager;
 
@@ -149,12 +151,17 @@ public class MainActivity extends FragmentActivity
 
     @Override
     public void onLocationChanged(Location location) {
+        Double startLat = mCurrentPosition.getLat();
+        Double startLng = mCurrentPosition.getLng();
+
         mCurrentPosition.setLat(location.getLatitude());
         mCurrentPosition.setLng(location.getLongitude());
         showProgress(false);
 
         if (!mDisplayedMarker) {
-            fetchPlaces();
+            if (isPositionChanged(startLat, startLng, location.getLatitude(), location.getLongitude())) {
+                fetchPlaces();
+            }
             mMapOperator.moveCamera(mCurrentPosition);
             mDisplayedMarker = true;
         }
@@ -253,6 +260,29 @@ public class MainActivity extends FragmentActivity
                     BitmapDescriptorFactory.defaultMarker(mMapApiClient.getIconColor(place.type)));
         }
         mPlaceDataManager.clear();
+    }
+
+    private boolean isPositionChanged(
+            double startLatitude, double startLongitude,
+            double endLatitude, double endLongitude) {
+
+        float[] distance = new float[] {};
+        boolean result = true;
+
+        try {
+            Location.distanceBetween(
+                startLatitude, startLongitude, endLatitude, endLongitude, distance);
+
+            // 2点間の距離が50m以下の場合、移動してないと見直す
+            if(distance != null && distance.length > 0 && distance[0] < DISTANCE_CHECK_THRESHOLD) {
+                result = false;
+            }
+        } catch (IllegalArgumentException e){
+            Log.e(TAG, "distanceBetween error");
+            e.printStackTrace();
+        }
+
+        return result;
     }
 }
 
