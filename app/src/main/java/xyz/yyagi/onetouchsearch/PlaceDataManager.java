@@ -65,6 +65,10 @@ public class PlaceDataManager {
         }
     }
 
+    public void delete() {
+        mContext.deleteFile(PLACE_DATA_FILE_NAME);
+    }
+
     public void add(Place place) {
         this.mPlaceData.add(place);
     }
