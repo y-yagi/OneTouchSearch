@@ -187,9 +187,10 @@ public class MainActivity extends FragmentActivity
             mQueue.add(new JsonObjectRequest(Request.Method.GET, url,
                     null, this, this
             ));
-
         }
+        mMapOperator.clear();
     }
+
     @Override
     public void onResponse(JSONObject response) {
         try {
