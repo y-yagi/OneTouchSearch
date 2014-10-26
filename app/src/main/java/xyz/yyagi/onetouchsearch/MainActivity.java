@@ -273,7 +273,7 @@ public class MainActivity extends FragmentActivity
             Location.distanceBetween(
                 startLatitude, startLongitude, endLatitude, endLongitude, distance);
 
-            // 2点間の距離が50m以下の場合、移動してないと見直す
+            // When the distance between two points is less than 50m, I consider that I do not move again
             if(distance != null && distance.length > 0 && distance[0] < DISTANCE_CHECK_THRESHOLD) {
                 result = false;
             }
