@@ -28,6 +28,10 @@ public class GoogleMapOperator {
         mMap.addMarker(new MarkerOptions().position(new LatLng(lat, lng)).title(title).icon(icon));
     }
 
+    public void clear() {
+        mMap.clear();
+    }
+
     public void setCurrentPosMarkerToMap(Position pos) {
         if (mCurrentPosMarker != null) {
             mCurrentPosMarker.remove();
