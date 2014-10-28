@@ -38,6 +38,7 @@ import xyz.yyagi.onetouchsearch.api.GoogleMapApiClient;
 import xyz.yyagi.onetouchsearch.api.GoogleMapOperator;
 import xyz.yyagi.onetouchsearch.api.GoogleMapTextSearchApiResult;
 import xyz.yyagi.onetouchsearch.models.Place;
+import xyz.yyagi.onetouchsearch.models.PlaceDataManager;
 import xyz.yyagi.onetouchsearch.models.Position;
 
 public class MainActivity extends FragmentActivity

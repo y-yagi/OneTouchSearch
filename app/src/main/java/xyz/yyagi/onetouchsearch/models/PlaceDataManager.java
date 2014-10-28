@@ -1,23 +1,16 @@
-package xyz.yyagi.onetouchsearch;
+package xyz.yyagi.onetouchsearch.models;
 
 import android.content.Context;
 import android.util.Log;
-
-import com.google.android.gms.maps.model.BitmapDescriptorFactory;
 
 import java.io.BufferedReader;
 import java.io.FileInputStream;
 import java.io.FileNotFoundException;
 import java.io.FileOutputStream;
-import java.io.IOException;
 import java.io.InputStreamReader;
-import java.io.ObjectInput;
 import java.io.ObjectInputStream;
 import java.io.ObjectOutputStream;
 import java.util.ArrayList;
-import java.util.List;
-
-import xyz.yyagi.onetouchsearch.models.Place;
 
 /**
  * Created by yaginuma on 14/10/17.
@@ -42,7 +35,6 @@ public class PlaceDataManager {
             ObjectInputStream is = new ObjectInputStream(in);
             mPlaceData = (ArrayList<Place>) is.readObject();
             in.close();
-            mContext.deleteFile(PLACE_DATA_FILE_NAME);
         } catch (FileNotFoundException e) {
             Log.e(TAG, "File Not Exist");
             if(in != null) try{ in.close(); } catch(Exception ignore){}
@@ -56,7 +48,7 @@ public class PlaceDataManager {
     public void save() {
         FileOutputStream out = null;
         try {
-            out = mContext.openFileOutput(PLACE_DATA_FILE_NAME, Context.MODE_PRIVATE);
+            out = mContext.openFileOutput(PLACE_DATA_FILE_NAME, Context.MODE_APPEND);
             ObjectOutputStream os = new ObjectOutputStream(out);
             os.writeObject(this.mPlaceData);
             out.close();
