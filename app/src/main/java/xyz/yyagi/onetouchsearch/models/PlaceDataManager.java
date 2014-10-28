@@ -1,23 +1,16 @@
-package xyz.yyagi.onetouchsearch;
+package xyz.yyagi.onetouchsearch.models;
 
 import android.content.Context;
 import android.util.Log;
-
-import com.google.android.gms.maps.model.BitmapDescriptorFactory;
 
 import java.io.BufferedReader;
 import java.io.FileInputStream;
 import java.io.FileNotFoundException;
 import java.io.FileOutputStream;
-import java.io.IOException;
 import java.io.InputStreamReader;
-import java.io.ObjectInput;
 import java.io.ObjectInputStream;
 import java.io.ObjectOutputStream;
 import java.util.ArrayList;
-import java.util.List;
-
-import xyz.yyagi.onetouchsearch.models.Place;
 
 /**
  * Created by yaginuma on 14/10/17.
