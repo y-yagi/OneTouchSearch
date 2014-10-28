@@ -35,7 +35,6 @@ public class PlaceDataManager {
             ObjectInputStream is = new ObjectInputStream(in);
             mPlaceData = (ArrayList<Place>) is.readObject();
             in.close();
-            mContext.deleteFile(PLACE_DATA_FILE_NAME);
         } catch (FileNotFoundException e) {
             Log.e(TAG, "File Not Exist");
             if(in != null) try{ in.close(); } catch(Exception ignore){}
@@ -49,7 +48,7 @@ public class PlaceDataManager {
     public void save() {
         FileOutputStream out = null;
         try {
-            out = mContext.openFileOutput(PLACE_DATA_FILE_NAME, Context.MODE_PRIVATE);
+            out = mContext.openFileOutput(PLACE_DATA_FILE_NAME, Context.MODE_APPEND);
             ObjectOutputStream os = new ObjectOutputStream(out);
             os.writeObject(this.mPlaceData);
             out.close();
