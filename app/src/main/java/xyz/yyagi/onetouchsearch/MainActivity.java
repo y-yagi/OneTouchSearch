@@ -147,7 +147,7 @@ public class MainActivity extends FragmentActivity
             startActivity(settingIntent);
             return;
         }
-        mLocationManager.requestLocationUpdates(LocationManager.GPS_PROVIDER, 10, 10, this);  // 10秒/10m間隔
+        mLocationManager.requestLocationUpdates(LocationManager.GPS_PROVIDER, 5, 10, this);  // 5秒/10m間隔
     }
 
     @Override
