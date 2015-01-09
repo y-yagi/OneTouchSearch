@@ -6,6 +6,7 @@ import android.content.SharedPreferences;
 import android.content.res.Configuration;
 import android.os.Build;
 import android.os.Bundle;
+import android.preference.EditTextPreference;
 import android.preference.PreferenceActivity;
 import android.preference.PreferenceFragment;
 import android.preference.PreferenceManager;
@@ -14,6 +15,7 @@ import android.widget.Toast;
 
 import xyz.yyagi.onetouchsearch.models.PlaceDataManager;
 
+import java.util.Arrays;
 import java.util.List;
 
 /**
@@ -42,11 +44,25 @@ public class SettingsActivity extends PreferenceActivity implements  SharedPrefe
         super.onPostCreate(savedInstanceState);
 
         setupSimplePreferencesScreen();
+        setValueToTitle();
     }
 
     @Override
     public void onSharedPreferenceChanged(SharedPreferences sharedPreferences, String key) {
         new PlaceDataManager(this).delete();
+        setValueToTitle();
+    }
+
+    @Override
+    protected void onResume() {
+        super.onResume();
+        getPreferenceScreen().getSharedPreferences().registerOnSharedPreferenceChangeListener(this);
+    }
+
+    @Override
+    protected void onPause() {
+        super.onPause();
+        getPreferenceScreen().getSharedPreferences().unregisterOnSharedPreferenceChangeListener(this);
     }
 
     /**
@@ -114,6 +130,19 @@ public class SettingsActivity extends PreferenceActivity implements  SharedPrefe
         public void onCreate(Bundle savedInstanceState) {
             super.onCreate(savedInstanceState);
             addPreferencesFromResource(R.xml.pref_general);
+        }
+    }
+
+    private void setValueToTitle() {
+        List<Integer> prefKeyList = Arrays.asList(R.string.pref_search_word1_key, R.string.pref_search_word2_key);
+
+        for(int resId : prefKeyList) {
+            EditTextPreference textPref = (EditTextPreference)findPreference(getString(resId));
+            String text = textPref.getText();
+            if (text.isEmpty()) {
+                text = getString(R.string.pref_hint_search_word);
+            }
+            textPref.setTitle(text);
         }
     }
 }
