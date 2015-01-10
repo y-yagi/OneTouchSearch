@@ -38,13 +38,13 @@ public class GoogleMapOperator {
         }
 
         mCurrentPosMarker = mMap.addMarker(new MarkerOptions()
-                .position(new LatLng(pos.getLat(), pos.getLng()))
+                .position(new LatLng(pos.lat, pos.lng))
                 .icon(BitmapDescriptorFactory.fromResource(R.drawable.current)));
     }
 
     public void moveCamera(Position pos) {
         CameraUpdate cu = CameraUpdateFactory.newLatLngZoom(
-                new LatLng(pos.getLat(), pos.getLng()), ZOOM);
+                new LatLng(pos.lat, pos.lng), ZOOM);
         mMap.moveCamera(cu);
     }
 

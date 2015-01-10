@@ -63,7 +63,7 @@ public class GoogleMapApiClient {
     }
 
     public ArrayList<String> getRequestUrlList() {
-        String location = "&location=" + mPosition.getLat() + "," + mPosition.getLng();
+        String location = "&location=" + mPosition.lat + "," + mPosition.lng;
         String base = URL_BASE + location + "&key=" + mGooglePlaceAPIKey;
         ArrayList requestUrlList = new ArrayList<String>();
 

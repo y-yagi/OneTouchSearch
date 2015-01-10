@@ -1,7 +1,13 @@
 buildscript {
-    repositories {
-        mavenCentral()
-        maven { url 'https://oss.sonatype.org/content/repositories/snapshots/' }
+    dependencies {
+        repositories {
+            mavenCentral()
+            maven { url "https://oss.sonatype.org/content/repositories/snapshots" }
+        }
+
+        classpath "com.android.tools.build:gradle:1.0.0"
+        classpath "com.github.jcandksolutions.gradle:android-unit-test:2.1.1"
+        classpath 'org.robolectric:robolectric-gradle-plugin:0.14.+'
     }
 }
 
@@ -9,12 +15,12 @@ buildscript {
 apply plugin: 'com.android.application'
 
 android {
-    compileSdkVersion 20
+    compileSdkVersion 19
     buildToolsVersion "20.0.0"
 
     defaultConfig {
         applicationId "xyz.yyagi.onetouchsearch"
-        minSdkVersion 14
+        minSdkVersion 20
         targetSdkVersion 20
         versionCode 1
         versionName "1.0"
@@ -26,11 +32,34 @@ android {
             shrinkResources true
         }
     }
+    sourceSets {
+        androidTest {
+            setRoot('src/test')
+        }
+    }
+    compileOptions {
+        sourceCompatibility JavaVersion.VERSION_1_6
+        targetCompatibility JavaVersion.VERSION_1_6
+    }
 }
 
+apply plugin: 'robolectric'
+
 dependencies {
-    compile fileTree(dir: 'libs', include: ['*.jar'])
     compile 'com.google.android.gms:play-services:4.2.42'
     compile 'com.android.support:appcompat-v7:20.+'
     compile 'com.mcxiaoke.volley:library:1.0.5'
+    androidTestCompile "junit:junit:4.10"
+    androidTestCompile 'org.robolectric:robolectric:2.4'
+
+}
+
+robolectric {
+    include '**/*Test.class'
+
+    // configure whether failing tests should fail the build
+    ignoreFailures true
+    afterTest { descriptor, result ->
+        println "Executing test for {$descriptor.name} with result: ${result.resultType}"
+    }
 }

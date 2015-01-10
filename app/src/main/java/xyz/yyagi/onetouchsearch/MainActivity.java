@@ -152,11 +152,11 @@ public class MainActivity extends FragmentActivity
 
     @Override
     public void onLocationChanged(Location location) {
-        Double startLat = mCurrentPosition.getLat();
-        Double startLng = mCurrentPosition.getLng();
+        Double startLat = mCurrentPosition.lat;
+        Double startLng = mCurrentPosition.lng;
 
-        mCurrentPosition.setLat(location.getLatitude());
-        mCurrentPosition.setLng(location.getLongitude());
+        mCurrentPosition.lat = location.getLatitude();
+        mCurrentPosition.lng = location.getLongitude();
         showProgress(false);
 
         if (!mDisplayedMarker) {
