@@ -20,8 +20,8 @@ android {
 
     defaultConfig {
         applicationId "xyz.yyagi.onetouchsearch"
-        minSdkVersion 20
-        targetSdkVersion 20
+        minSdkVersion 14
+        targetSdkVersion 19
         versionCode 1
         versionName "1.0"
     }
@@ -36,10 +36,6 @@ android {
         androidTest {
             setRoot('src/test')
         }
-    }
-    compileOptions {
-        sourceCompatibility JavaVersion.VERSION_1_6
-        targetCompatibility JavaVersion.VERSION_1_6
     }
 }
 
