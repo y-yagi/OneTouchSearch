@@ -132,6 +132,7 @@ public class MainActivity extends FragmentActivity
         if (mMapOperator == null) {
             GoogleMap map = ((SupportMapFragment) getSupportFragmentManager()
                     .findFragmentById(R.id.map)).getMap();
+            map.setMapType(GoogleMap.MAP_TYPE_TERRAIN);
             mMapOperator = new GoogleMapOperator(map);
             mMapOperator.moveCamera(mCurrentPosition);
             mMapOperator.setCurrentPosMarkerToMap(mCurrentPosition);
