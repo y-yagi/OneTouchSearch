@@ -93,6 +93,9 @@ public class MainActivity extends FragmentActivity
 
         mMapApiClient.setup();
         setUpMapIfNeeded();
+
+        mCurrentPosition.apply();
+        mPlaceDataManager.save();
     }
 
     @Override
