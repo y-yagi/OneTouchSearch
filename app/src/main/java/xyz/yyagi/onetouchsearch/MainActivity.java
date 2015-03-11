@@ -5,6 +5,7 @@ import android.animation.AnimatorListenerAdapter;
 import android.annotation.TargetApi;
 import android.content.Context;
 import android.content.Intent;
+import android.location.Criteria;
 import android.location.Location;
 import android.location.LocationManager;
 import android.os.Build;
@@ -80,10 +81,8 @@ public class MainActivity extends FragmentActivity
         setUpMapIfNeeded();
         if (mPlaceDataManager.hasPlaceData()) {
             displayOldData();
-            Toast.makeText(this, getString(R.string.info_loading), Toast.LENGTH_LONG).show();
-        } else {
-            showProgress(true);
         }
+        Toast.makeText(this, getString(R.string.info_loading), Toast.LENGTH_LONG).show();
         setLocationProvider();
     }
 
@@ -144,14 +143,14 @@ public class MainActivity extends FragmentActivity
 
     private void setLocationProvider() {
         mLocationManager = (LocationManager) this.getSystemService(Context.LOCATION_SERVICE);
-        Boolean mLocationEnabled = mLocationManager.isProviderEnabled(LocationManager.GPS_PROVIDER);
-        if (!mLocationEnabled) {
-            Toast.makeText(this, getString(R.string.error_location_setting), Toast.LENGTH_LONG).show();
-            Intent settingIntent = new Intent(Settings.ACTION_LOCATION_SOURCE_SETTINGS);
-            startActivity(settingIntent);
-            return;
-        }
-        mLocationManager.requestLocationUpdates(LocationManager.GPS_PROVIDER, 5, 10, this);  // 5秒/10m間隔
+        String provider = mLocationManager.getBestProvider(buildCriteria(), true);
+        mLocationManager.requestLocationUpdates(provider, 5, 10, this);  // 5秒/10m間隔
+    }
+
+    private Criteria buildCriteria() {
+       Criteria criteria = new Criteria();
+       criteria.setAccuracy(Criteria.ACCURACY_FINE);
+       return criteria;
     }
 
     @Override
