@@ -210,14 +210,13 @@ public class MainActivity extends FragmentActivity
             Toast.makeText(this, getString(R.string.info_load_completed), Toast.LENGTH_LONG).show();
             ArrayList<Place> placeData = new ArrayList<Place>();
 
-            long currentTime = Util.currentTime();
             for (int i = 0; i < apiResult.resultCount(); i++) {
                 String name = apiResult.getName(i);
                 Double lat  = apiResult.getLat(i);
                 Double lng  = apiResult.getLng(i);
                 mMapOperator.addMarkerToMap(name, lat, lng,
                         BitmapDescriptorFactory.defaultMarker(mMapApiClient.getIconColor(mResponseCounter)));
-                mPlaceDataManager.save(name, lat, lng, mResponseCounter, currentTime);
+                mPlaceDataManager.save(name, lat, lng, mResponseCounter);
             }
 
         } catch (JSONException e ) {

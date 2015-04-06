@@ -14,6 +14,7 @@ import java.util.ArrayList;
 
 import io.realm.Realm;
 import io.realm.RealmResults;
+import xyz.yyagi.onetouchsearch.Util;
 
 /**
  * Created by yaginuma on 14/10/17.
@@ -22,40 +23,42 @@ public class PlaceDataManager {
     private Context mContext;
     private Realm mRealm;
     private RealmResults<Place> mPlaceData = null;
-    private long mCurrentVersion = 0;
+    private long mLastVersion = 0;
+    private long mNextVersion = 0;
 
     public PlaceDataManager(Context context) {
         this.mContext = context;
         mRealm = Realm.getInstance(context);
-        getCurrentVersion();
+        getLastVersion();
+        mNextVersion = Util.currentTime();
         if(hasPlaceData()) loadPlaceData();
     }
 
     private void loadPlaceData() {
         mPlaceData = mRealm.where(Place.class)
-                .equalTo("version", mCurrentVersion).findAll();
+                .equalTo("version", mLastVersion).findAll();
     }
 
-    private void getCurrentVersion() {
-        mCurrentVersion = mRealm.where(Place.class).findAll().max("version").longValue();
+    private void getLastVersion() {
+        mLastVersion = mRealm.where(Place.class).findAll().max("version").longValue();
     }
 
     public boolean hasPlaceData() {
-        return (mCurrentVersion > 0);
+        return (mLastVersion > 0);
     }
 
     public RealmResults<Place> get() {
         return mPlaceData;
     }
 
-    public void save(String name, Double lat, Double lng, int type, long version) {
+    public void save(String name, Double lat, Double lng, int type) {
         mRealm.beginTransaction();
         Place place = mRealm.createObject(Place.class);
         place.setName(name);
         place.setLatitude(lat);
         place.setLongitude(lng);
         place.setType(type);
-        place.setVersion(version);
+        place.setVersion(mNextVersion);
         mRealm.commitTransaction();
     }
 }
