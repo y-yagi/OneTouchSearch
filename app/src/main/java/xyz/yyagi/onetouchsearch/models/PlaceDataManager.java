@@ -12,68 +12,50 @@ import java.io.ObjectInputStream;
 import java.io.ObjectOutputStream;
 import java.util.ArrayList;
 
+import io.realm.Realm;
+import io.realm.RealmResults;
+
 /**
  * Created by yaginuma on 14/10/17.
  */
 public class PlaceDataManager {
     private Context mContext;
-    private final static String PLACE_DATA_FILE_NAME = "place_data";
-    private static final String TAG = PlaceDataManager.class.getSimpleName();
-    private ArrayList<Place> mPlaceData;
+    private Realm mRealm;
+    private RealmResults<Place> mPlaceData = null;
+    private long mCurrentVersion = 0;
 
     public PlaceDataManager(Context context) {
         this.mContext = context;
-        this.mPlaceData = new ArrayList<Place>();
-        read();
+        mRealm = Realm.getInstance(context);
+        getCurrentVersion();
+        if(hasPlaceData()) loadPlaceData();
     }
 
-    private void read() {
-        FileInputStream in = null;
-        try {
-            in = mContext.openFileInput(PLACE_DATA_FILE_NAME);
-            BufferedReader reader = new BufferedReader(new InputStreamReader(in));
-            ObjectInputStream is = new ObjectInputStream(in);
-            mPlaceData = (ArrayList<Place>) is.readObject();
-            in.close();
-        } catch (FileNotFoundException e) {
-            Log.e(TAG, "File Not Exist");
-            if(in != null) try{ in.close(); } catch(Exception ignore){}
-        } catch (Exception e) {
-            Log.e(TAG, "File Read Error");
-            e.printStackTrace();
-            if(in != null) try{ in.close(); } catch(Exception ignore){}
-        }
+    private void loadPlaceData() {
+        mPlaceData = mRealm.where(Place.class)
+                .equalTo("version", mCurrentVersion).findAll();
     }
 
-    public void save() {
-        FileOutputStream out = null;
-        try {
-            out = mContext.openFileOutput(PLACE_DATA_FILE_NAME, Context.MODE_APPEND);
-            ObjectOutputStream os = new ObjectOutputStream(out);
-            os.writeObject(this.mPlaceData);
-            out.close();
-        } catch (Exception e) {
-            if(out != null) try{ out.close(); } catch(Exception ignore){}
-        }
-    }
-
-    public void delete() {
-        mContext.deleteFile(PLACE_DATA_FILE_NAME);
-    }
-
-    public void add(Place place) {
-        this.mPlaceData.add(place);
+    private void getCurrentVersion() {
+        mCurrentVersion = mRealm.where(Place.class).findAll().max("version").longValue();
     }
 
     public boolean hasPlaceData() {
-        return !this.mPlaceData.isEmpty();
+        return (mCurrentVersion > 0);
     }
 
-    public ArrayList<Place> get() {
+    public RealmResults<Place> get() {
         return mPlaceData;
     }
 
-    public void clear() {
-        this.mPlaceData.clear();
+    public void save(String name, Double lat, Double lng, int type, long version) {
+        mRealm.beginTransaction();
+        Place place = mRealm.createObject(Place.class);
+        place.setName(name);
+        place.setLatitude(lat);
+        place.setLongitude(lng);
+        place.setType(type);
+        place.setVersion(version);
+        mRealm.commitTransaction();
     }
 }

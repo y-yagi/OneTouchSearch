@@ -34,6 +34,8 @@ import org.json.JSONObject;
 
 import java.util.ArrayList;
 
+import io.realm.Realm;
+import io.realm.RealmResults;
 import xyz.yyagi.onetouchsearch.api.GoogleMapApiClient;
 import xyz.yyagi.onetouchsearch.api.GoogleMapOperator;
 import xyz.yyagi.onetouchsearch.api.GoogleMapTextSearchApiResult;
@@ -65,11 +67,11 @@ public class MainActivity extends FragmentActivity
         mGooglePlaceAPIKey = getString(R.string.google_place_api_key);
         mCurrentPosition = new Position(this);
         mMapApiClient = new GoogleMapApiClient(this, mCurrentPosition);
-        mPlaceDataManager = new PlaceDataManager(this);
 
         setContentView(R.layout.activity_main);
         mProgressView = findViewById(R.id.progress);
         mMapFragment = findViewById(R.id.map) ;
+        mPlaceDataManager = new PlaceDataManager(this);
 
         if (mMapApiClient.getSearchWordList().isEmpty()) {
             Intent settingIntent = new Intent(this, SettingsActivity.class);
@@ -103,7 +105,6 @@ public class MainActivity extends FragmentActivity
         }
         mLocationManager.removeUpdates(this);
         mCurrentPosition.apply();
-        mPlaceDataManager.save();
     }
 
 
@@ -208,15 +209,17 @@ public class MainActivity extends FragmentActivity
 
             Toast.makeText(this, getString(R.string.info_load_completed), Toast.LENGTH_LONG).show();
             ArrayList<Place> placeData = new ArrayList<Place>();
+
+            long currentTime = Util.currentTime();
             for (int i = 0; i < apiResult.resultCount(); i++) {
                 String name = apiResult.getName(i);
                 Double lat  = apiResult.getLat(i);
                 Double lng  = apiResult.getLng(i);
                 mMapOperator.addMarkerToMap(name, lat, lng,
                         BitmapDescriptorFactory.defaultMarker(mMapApiClient.getIconColor(mResponseCounter)));
-                Place place = new Place(name, lat, lng, mResponseCounter);
-                mPlaceDataManager.add(place);
+                mPlaceDataManager.save(name, lat, lng, mResponseCounter, currentTime);
             }
+
         } catch (JSONException e ) {
             Log.e(TAG, "Data parse error");
             e.printStackTrace();
@@ -257,12 +260,11 @@ public class MainActivity extends FragmentActivity
     }
 
     private void displayOldData() {
-        ArrayList<Place> places = mPlaceDataManager.get();
+        RealmResults<Place> places = mPlaceDataManager.get();
         for (Place place : places) {
-            mMapOperator.addMarkerToMap(place.name, place.latitude, place.longitude,
-                    BitmapDescriptorFactory.defaultMarker(mMapApiClient.getIconColor(place.type)));
+            mMapOperator.addMarkerToMap(place.getName(), place.getLatitude(), place.getLongitude(),
+                    BitmapDescriptorFactory.defaultMarker(mMapApiClient.getIconColor(place.getType())));
         }
-        mPlaceDataManager.clear();
     }
 
     private boolean isPositionChanged(
