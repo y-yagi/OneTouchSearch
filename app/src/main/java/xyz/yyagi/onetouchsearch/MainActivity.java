@@ -36,6 +36,7 @@ import java.util.ArrayList;
 
 import io.realm.Realm;
 import io.realm.RealmResults;
+import progress.menu.item.ProgressMenuItemHelper;
 import xyz.yyagi.onetouchsearch.api.GoogleMapApiClient;
 import xyz.yyagi.onetouchsearch.api.GoogleMapOperator;
 import xyz.yyagi.onetouchsearch.api.GoogleMapTextSearchApiResult;
@@ -60,6 +61,8 @@ public class MainActivity extends FragmentActivity
 
     private int mResponseCounter = 0;
     private PlaceDataManager mPlaceDataManager;
+    private ProgressMenuItemHelper mProgressHelper;
+
 
     @Override
     protected void onCreate(Bundle savedInstanceState) {
@@ -112,6 +115,8 @@ public class MainActivity extends FragmentActivity
     public boolean onCreateOptionsMenu(Menu menu) {
         // Inflate the menu; this adds items to the action bar if it is present.
         getMenuInflater().inflate(R.menu.my, menu);
+        mProgressHelper = new ProgressMenuItemHelper(menu, R.id.action_refresh);
+        mProgressHelper.startProgress();
         return true;
     }
 
@@ -196,6 +201,7 @@ public class MainActivity extends FragmentActivity
 
     @Override
     public void onResponse(JSONObject response) {
+        mProgressHelper.stopProgress();
         try {
             GoogleMapTextSearchApiResult apiResult = new GoogleMapTextSearchApiResult(response);
             if (apiResult.resultCount() == 0) {
@@ -228,6 +234,7 @@ public class MainActivity extends FragmentActivity
 
     @Override
     public void onErrorResponse(VolleyError error) {
+        mProgressHelper.stopProgress();
         Log.e(TAG, "Data load error");
         error.printStackTrace();
     }
