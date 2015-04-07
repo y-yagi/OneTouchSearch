@@ -35,6 +35,9 @@ import org.json.JSONObject;
 
 import java.util.ArrayList;
 
+import io.realm.Realm;
+import io.realm.RealmResults;
+import progress.menu.item.ProgressMenuItemHelper;
 import xyz.yyagi.onetouchsearch.api.GoogleMapApiClient;
 import xyz.yyagi.onetouchsearch.api.GoogleMapOperator;
 import xyz.yyagi.onetouchsearch.api.GoogleMapTextSearchApiResult;
@@ -59,6 +62,8 @@ public class MainActivity extends FragmentActivity
 
     private int mResponseCounter = 0;
     private PlaceDataManager mPlaceDataManager;
+    private ProgressMenuItemHelper mProgressHelper;
+
 
     @Override
     protected void onCreate(Bundle savedInstanceState) {
@@ -66,11 +71,11 @@ public class MainActivity extends FragmentActivity
         mGooglePlaceAPIKey = getString(R.string.google_place_api_key);
         mCurrentPosition = new Position(this);
         mMapApiClient = new GoogleMapApiClient(this, mCurrentPosition);
-        mPlaceDataManager = new PlaceDataManager(this);
 
         setContentView(R.layout.activity_main);
         mProgressView = findViewById(R.id.progress);
         mMapFragment = findViewById(R.id.map) ;
+        mPlaceDataManager = new PlaceDataManager(this);
 
         if (mMapApiClient.getSearchWordList().isEmpty()) {
             Intent settingIntent = new Intent(this, SettingsActivity.class);
@@ -105,7 +110,6 @@ public class MainActivity extends FragmentActivity
         }
         mLocationManager.removeUpdates(this);
         mCurrentPosition.apply();
-        mPlaceDataManager.save();
     }
 
 
@@ -113,6 +117,8 @@ public class MainActivity extends FragmentActivity
     public boolean onCreateOptionsMenu(Menu menu) {
         // Inflate the menu; this adds items to the action bar if it is present.
         getMenuInflater().inflate(R.menu.my, menu);
+        mProgressHelper = new ProgressMenuItemHelper(menu, R.id.action_refresh);
+        mProgressHelper.startProgress();
         return true;
     }
 
@@ -197,6 +203,7 @@ public class MainActivity extends FragmentActivity
 
     @Override
     public void onResponse(JSONObject response) {
+        mProgressHelper.stopProgress();
         try {
             GoogleMapTextSearchApiResult apiResult = new GoogleMapTextSearchApiResult(response);
             if (apiResult.resultCount() == 0) {
@@ -210,15 +217,16 @@ public class MainActivity extends FragmentActivity
 
             Toast.makeText(this, getString(R.string.info_load_completed), Toast.LENGTH_LONG).show();
             ArrayList<Place> placeData = new ArrayList<Place>();
+
             for (int i = 0; i < apiResult.resultCount(); i++) {
                 String name = apiResult.getName(i);
                 Double lat  = apiResult.getLat(i);
                 Double lng  = apiResult.getLng(i);
                 mMapOperator.addMarkerToMap(name, lat, lng,
                         BitmapDescriptorFactory.defaultMarker(mMapApiClient.getIconColor(mResponseCounter)));
-                Place place = new Place(name, lat, lng, mResponseCounter);
-                mPlaceDataManager.add(place);
+                mPlaceDataManager.save(name, lat, lng, mResponseCounter);
             }
+
         } catch (JSONException e ) {
             Log.e(TAG, "Data parse error");
             e.printStackTrace();
@@ -228,6 +236,7 @@ public class MainActivity extends FragmentActivity
 
     @Override
     public void onErrorResponse(VolleyError error) {
+        mProgressHelper.stopProgress();
         Log.e(TAG, "Data load error");
         error.printStackTrace();
     }
@@ -259,12 +268,11 @@ public class MainActivity extends FragmentActivity
     }
 
     private void displayOldData() {
-        ArrayList<Place> places = mPlaceDataManager.get();
+        RealmResults<Place> places = mPlaceDataManager.get();
         for (Place place : places) {
-            mMapOperator.addMarkerToMap(place.name, place.latitude, place.longitude,
-                    BitmapDescriptorFactory.defaultMarker(mMapApiClient.getIconColor(place.type)));
+            mMapOperator.addMarkerToMap(place.getName(), place.getLatitude(), place.getLongitude(),
+                    BitmapDescriptorFactory.defaultMarker(mMapApiClient.getIconColor(place.getType())));
         }
-        mPlaceDataManager.clear();
     }
 
     private boolean isPositionChanged(

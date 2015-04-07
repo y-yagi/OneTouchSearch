@@ -8,4 +8,6 @@
     <string name="info_not_found">place that accorded was not found. keyword: </string>
     <string name="info_load_completed">loading was completed</string>
     <string name="info_loading">now loading…</string>
+    <string name="refresh">Refresh</string>
+
 </resources>

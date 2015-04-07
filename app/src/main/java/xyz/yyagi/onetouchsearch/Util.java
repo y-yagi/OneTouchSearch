@@ -16,5 +16,9 @@ public class Util {
         }
         return result;
     }
+
+    public static long currentTime() {
+        return System.currentTimeMillis();
+    }
 }
 

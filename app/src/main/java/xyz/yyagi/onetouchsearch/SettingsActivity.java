@@ -49,7 +49,6 @@ public class SettingsActivity extends PreferenceActivity implements  SharedPrefe
 
     @Override
     public void onSharedPreferenceChanged(SharedPreferences sharedPreferences, String key) {
-        new PlaceDataManager(this).delete();
         setValueToTitle();
     }
 
