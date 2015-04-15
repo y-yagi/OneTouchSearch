@@ -99,7 +99,6 @@ public class MainActivity extends FragmentActivity
         setUpMapIfNeeded();
 
         mCurrentPosition.apply();
-        mPlaceDataManager.save();
     }
 
     @Override
