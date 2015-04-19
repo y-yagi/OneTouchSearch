@@ -26,6 +26,7 @@ import com.android.volley.Response;
 import com.android.volley.VolleyError;
 import com.android.volley.toolbox.JsonObjectRequest;
 import com.android.volley.toolbox.Volley;
+import com.google.android.gms.location.places.ui.PlacePicker;
 import com.google.android.gms.maps.GoogleMap;
 import com.google.android.gms.maps.SupportMapFragment;
 import com.google.android.gms.maps.model.BitmapDescriptorFactory;
@@ -59,8 +60,10 @@ public class MainActivity extends FragmentActivity
 
     private static final String TAG = MainActivity.class.getSimpleName();
     private static final double DISTANCE_CHECK_THRESHOLD = 50.0;
+    private static final int PLACE_PICKER_REQUEST = 1;
 
     private int mResponseCounter = 0;
+
     private PlaceDataManager mPlaceDataManager;
     private ProgressMenuItemHelper mProgressHelper;
 
@@ -89,6 +92,15 @@ public class MainActivity extends FragmentActivity
         }
         Toast.makeText(this, getString(R.string.info_loading), Toast.LENGTH_LONG).show();
         setLocationProvider();
+
+        PlacePicker.IntentBuilder builder = new PlacePicker.IntentBuilder();
+        Context context = getApplicationContext();
+        try {
+            startActivityForResult(builder.build(context), PLACE_PICKER_REQUEST);
+        } catch (Exception e) {
+            Log.e(TAG, "Data parse error");
+            e.printStackTrace();
+        }
     }
 
     @Override
@@ -295,6 +307,16 @@ public class MainActivity extends FragmentActivity
         }
 
         return result;
+    }
+
+    protected void onActivityResult(int requestCode, int resultCode, Intent data) {
+        if (requestCode == PLACE_PICKER_REQUEST) {
+            if (resultCode == RESULT_OK) {
+                com.google.android.gms.location.places.Place place = PlacePicker.getPlace(data, this);
+                String toastMsg = String.format("Place: %s", place.getName());
+                Toast.makeText(this, toastMsg, Toast.LENGTH_LONG).show();
+            }
+        }
     }
 }
 
