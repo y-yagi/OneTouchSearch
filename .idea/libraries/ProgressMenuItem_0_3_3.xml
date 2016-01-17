@@ -5,6 +5,8 @@
       <root url="jar://$PROJECT_DIR$/app/build/intermediates/exploded-aar/com.github.hotchemi/ProgressMenuItem/0.3.3/classes.jar!/" />
     </CLASSES>
     <JAVADOC />
-    <SOURCES />
+    <SOURCES>
+      <root url="jar://$USER_HOME$/.gradle/caches/modules-2/files-2.1/com.github.hotchemi/ProgressMenuItem/0.3.3/d95e2e08d2617c2d44de1ba585cd842738526f4c/ProgressMenuItem-0.3.3-sources.jar!/" />
+    </SOURCES>
   </library>
 </component>
