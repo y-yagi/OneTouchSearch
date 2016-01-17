@@ -68,7 +68,7 @@ public class MainActivity extends FragmentActivity
     @Override
     protected void onCreate(Bundle savedInstanceState) {
         super.onCreate(savedInstanceState);
-        mGooglePlaceAPIKey = getString(R.string.google_place_api_key);
+        mGooglePlaceAPIKey = getString(R.string.google_map_key);
         mCurrentPosition = new Position(this);
         mMapApiClient = new GoogleMapApiClient(this, mCurrentPosition);
 

@@ -19,6 +19,7 @@ android {
     buildToolsVersion "20.0.0"
 
     defaultConfig {
+        resValue "string", "google_map_key", "\"${project.property("googleMapKey")}\""
         applicationId "xyz.yyagi.onetouchsearch"
         minSdkVersion 16
         targetSdkVersion 19

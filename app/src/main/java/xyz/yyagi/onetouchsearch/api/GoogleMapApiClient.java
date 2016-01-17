@@ -32,7 +32,7 @@ public class GoogleMapApiClient {
     public GoogleMapApiClient(Context context, Position position) {
         this.mContext = context;
         this.mPosition = position;
-        this.mGooglePlaceAPIKey = context.getString(R.string.google_place_api_key);
+        this.mGooglePlaceAPIKey = context.getString(R.string.google_map_key);
         this.mSearchWordList = new ArrayList<String>();
         this.mColorList = Arrays.asList(BitmapDescriptorFactory.HUE_ORANGE, BitmapDescriptorFactory.HUE_AZURE);
 
