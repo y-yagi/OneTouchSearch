@@ -1,8 +1,9 @@
-package com.example.yaginuma.onetouchsearch;
+package com.example.yaginuma.onetouchsearch.activity;
 
 import android.support.v4.app.FragmentActivity;
 import android.os.Bundle;
 
+import com.example.yaginuma.onetouchsearch.R;
 import com.google.android.gms.maps.CameraUpdateFactory;
 import com.google.android.gms.maps.GoogleMap;
 import com.google.android.gms.maps.OnMapReadyCallback;
