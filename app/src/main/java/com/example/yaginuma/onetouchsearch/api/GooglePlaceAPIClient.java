@@ -23,7 +23,6 @@ public class GooglePlaceAPIClient {
                 .build();
         mGooglePlaceService = builder.create(GooglePlaceService.class);
         this.mGooglePlaceAPIKey = context.getString(R.string.places_search_api_key);
-
     }
 
     public interface GooglePlaceService {

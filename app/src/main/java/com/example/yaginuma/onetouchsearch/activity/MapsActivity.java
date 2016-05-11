@@ -1,10 +1,18 @@
 package com.example.yaginuma.onetouchsearch.activity;
 
+import android.content.Intent;
+import android.content.SharedPreferences;
+import android.preference.PreferenceManager;
 import android.support.v4.app.FragmentActivity;
 import android.os.Bundle;
+import android.support.v7.app.AppCompatActivity;
+import android.support.v7.widget.Toolbar;
 import android.util.Log;
+import android.view.Menu;
+import android.view.MenuItem;
 import android.widget.Toast;
 
+import com.example.yaginuma.onetouchsearch.R;
 import com.example.yaginuma.onetouchsearch.api.GoogleMapTextSearchApiResult;
 import com.example.yaginuma.onetouchsearch.api.GooglePlaceAPIClient;
 import com.example.yaginuma.onetouchsearch.model.GoogleMapOperator;
@@ -13,24 +21,38 @@ import com.google.android.gms.maps.GoogleMap;
 import com.google.android.gms.maps.OnMapReadyCallback;
 import com.google.android.gms.maps.SupportMapFragment;
 
+import java.util.ArrayList;
+
 import okhttp3.ResponseBody;
 import retrofit2.Call;
 import retrofit2.Callback;
 import retrofit2.Response;
 
-public class MapsActivity extends FragmentActivity implements OnMapReadyCallback {
+public class MapsActivity extends AppCompatActivity implements OnMapReadyCallback {
 
     public static final String TAG = MapsActivity.class.getSimpleName();
     private GoogleMap mMap;
     private GoogleMapOperator mMapOperator;
+    private ArrayList<String> mSearchWordList;
 
     @Override
     protected void onCreate(Bundle savedInstanceState) {
         super.onCreate(savedInstanceState);
+
+        mSearchWordList = new ArrayList<String>();
+        SharedPreferences sharedPrefereces= PreferenceManager.getDefaultSharedPreferences(this);
+        String searhWord = sharedPrefereces.getString(getString(R.string.pref_search_word1_key), "");
+        if (searhWord.isEmpty())  {
+            Intent settingIntent = new Intent(this, SettingsActivity.class);
+            startActivity(settingIntent);
+            return;
+        }
+
         setContentView(com.example.yaginuma.onetouchsearch.R.layout.activity_maps);
         SupportMapFragment mapFragment = (SupportMapFragment) getSupportFragmentManager()
                 .findFragmentById(com.example.yaginuma.onetouchsearch.R.id.map);
         mapFragment.getMapAsync(this);
+
     }
 
     @Override
@@ -80,5 +102,24 @@ public class MapsActivity extends FragmentActivity implements OnMapReadyCallback
                 Log.e(TAG, "textsearch get failure");
             }
         });
+    }
+
+    @Override
+    public boolean onCreateOptionsMenu(Menu menu) {
+        getMenuInflater().inflate(R.menu.maps, menu);
+        return true;
+    }
+
+    @Override
+    public boolean onOptionsItemSelected(MenuItem item) {
+        int id = item.getItemId();
+
+        if (id == R.id.action_settings) {
+            Intent settingIntent = new Intent(this, SettingsActivity.class);
+            startActivity(settingIntent);
+            return true;
+        }
+
+        return super.onOptionsItemSelected(item);
     }
 }
