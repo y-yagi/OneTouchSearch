@@ -6,11 +6,12 @@ android {
 
     defaultConfig {
         applicationId "com.example.yaginuma.onetouchsearch"
-        minSdkVersion 18
+        minSdkVersion 17
         targetSdkVersion 23
         versionCode 1
         versionName "1.0"
         resValue "string", "google_maps_key", "\"${project.property("googleMapsKey")}\""
+        resValue "string", "places_search_api_key", "\"${project.property("placesSearchAPIKey")}\""
     }
     buildTypes {
         release {
@@ -24,5 +25,9 @@ dependencies {
     compile fileTree(dir: 'libs', include: ['*.jar'])
     testCompile 'junit:junit:4.12'
     compile 'com.android.support:appcompat-v7:23.3.0'
-    compile 'com.google.android.gms:play-services:8.4.0'
+    compile 'com.google.android.gms:play-services-maps:8.4.0'
+    compile 'com.google.android.gms:play-services-location:8.4.0'
+    compile 'com.squareup.retrofit2:retrofit:2.0.2'
+    compile 'com.squareup.retrofit2:converter-gson:2.0.2'
+    compile 'com.android.support:support-v4:23.3.0'
 }
