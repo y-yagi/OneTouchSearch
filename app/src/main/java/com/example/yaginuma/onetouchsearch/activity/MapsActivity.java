@@ -78,7 +78,9 @@ public class MapsActivity extends AppCompatActivity implements
     @Override
     protected void onStart() {
         super.onStart();
-        mGoogleApiClient.connect();
+        if (mGoogleApiClient != null) {
+            mGoogleApiClient.connect();
+        }
     }
 
     @Override
