@@ -92,7 +92,6 @@ public class MapsActivity extends AppCompatActivity implements
     @Override
     protected void onResume() {
         super.onResume();
-        mCurrentPosition.apply();
 
         if (mGoogleApiClient.isConnected()) {
             startLocationUpdates();
@@ -135,9 +134,9 @@ public class MapsActivity extends AppCompatActivity implements
                                     apiResult.getLng(i),
                                     mMapOperator.getIcon(mRequestCount)
                             );
-                            mRequestCount++;
 
                         }
+                        mRequestCount++;
                     } catch (Exception e) {
                         Log.e(TAG, "textsearch responce parse error\n" + e.getMessage());
                     }
