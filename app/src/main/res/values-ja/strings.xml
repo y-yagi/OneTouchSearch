@@ -4,4 +4,6 @@
     <string name="pref_title_search_word1">検索キーワード1</string>
     <string name="pref_title_search_word2">検索キーワード2</string>
     <string name="pref_hint_search_word">検索したいキーワードを入力して下さい</string>
+
+    <string name="msg_load_complete">データの読み込みが完了しました</string>
 </resources>

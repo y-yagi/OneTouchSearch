@@ -10,4 +10,6 @@
     <string name="pref_title_search_word1">Search Word1</string>
     <string name="pref_title_search_word2">Search Word2</string>
     <string name="pref_hint_search_word">input the keyword that you want to search</string>
+
+    <string name="msg_load_complete">Load complete</string>
 </resources>

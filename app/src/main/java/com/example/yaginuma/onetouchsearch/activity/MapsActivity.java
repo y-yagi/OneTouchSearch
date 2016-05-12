@@ -139,6 +139,11 @@ public class MapsActivity extends AppCompatActivity implements
 
                         }
                         mRequestCount++;
+
+                        if (mRequestCount == mSearchWordList.size()) {
+                            Toast.makeText(getApplicationContext(), getString(R.string.msg_load_complete), Toast.LENGTH_LONG).show();
+                        }
+
                     } catch (Exception e) {
                         Log.e(TAG, "textsearch responce parse error\n" + e.getMessage());
                     }
