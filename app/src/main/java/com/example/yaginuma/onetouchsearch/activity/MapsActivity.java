@@ -54,7 +54,6 @@ public class MapsActivity extends AppCompatActivity implements OnMapReadyCallbac
         SupportMapFragment mapFragment = (SupportMapFragment) getSupportFragmentManager()
                 .findFragmentById(com.example.yaginuma.onetouchsearch.R.id.map);
         mapFragment.getMapAsync(this);
-
     }
 
     @Override
@@ -90,18 +89,17 @@ public class MapsActivity extends AppCompatActivity implements OnMapReadyCallbac
 
                         }
                     } catch (Exception e) {
-                        Log.e(TAG, "textsearch responce parse error");
-                        Log.e(TAG, e.getMessage());
+                        Log.e(TAG, "textsearch responce parse error\n" + e.getMessage());
                     }
                 } else {
-                    Log.e(TAG, "textsearch responce is not success");
+                    Log.e(TAG, "textsearch API is not success");
                 }
             }
 
             @Override
             public void onFailure(Call<ResponseBody> call, Throwable t) {
                 Toast.makeText(getApplicationContext(), "error", Toast.LENGTH_SHORT).show();
-                Log.e(TAG, "textsearch get failure");
+                Log.e(TAG, "textsearch API failured");
             }
         };
 
