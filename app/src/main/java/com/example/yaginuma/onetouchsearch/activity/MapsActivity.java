@@ -1,13 +1,14 @@
 package com.example.yaginuma.onetouchsearch.activity;
 
+import android.Manifest;
 import android.content.Intent;
 import android.content.SharedPreferences;
+import android.content.pm.PackageManager;
 import android.location.Location;
 import android.preference.PreferenceManager;
-import android.support.v4.app.FragmentActivity;
 import android.os.Bundle;
+import android.support.v4.app.ActivityCompat;
 import android.support.v7.app.AppCompatActivity;
-import android.support.v7.widget.Toolbar;
 import android.util.Log;
 import android.view.Menu;
 import android.view.MenuItem;
@@ -18,7 +19,12 @@ import com.example.yaginuma.onetouchsearch.api.GoogleMapTextSearchApiResult;
 import com.example.yaginuma.onetouchsearch.api.GooglePlaceAPIClient;
 import com.example.yaginuma.onetouchsearch.model.GoogleMapOperator;
 import com.example.yaginuma.onetouchsearch.model.Position;
+import com.google.android.gms.common.ConnectionResult;
+import com.google.android.gms.common.api.GoogleApiClient;
 import com.google.android.gms.location.LocationListener;
+import com.google.android.gms.location.LocationRequest;
+import com.google.android.gms.location.LocationServices;
+import com.google.android.gms.location.LocationSettingsRequest;
 import com.google.android.gms.maps.GoogleMap;
 import com.google.android.gms.maps.OnMapReadyCallback;
 import com.google.android.gms.maps.SupportMapFragment;
@@ -30,15 +36,21 @@ import retrofit2.Call;
 import retrofit2.Callback;
 import retrofit2.Response;
 
-public class MapsActivity extends AppCompatActivity
-        implements OnMapReadyCallback, LocationListener {
+public class MapsActivity extends AppCompatActivity implements
+        OnMapReadyCallback, GoogleApiClient.ConnectionCallbacks, GoogleApiClient.OnConnectionFailedListener, LocationListener {
 
     public static final String TAG = MapsActivity.class.getSimpleName();
     private GoogleMap mMap;
     private GoogleMapOperator mMapOperator;
+    private GoogleApiClient mGoogleApiClient;
+    private LocationRequest mLocationRequest;
+    private LocationSettingsRequest mLocationSettingsRequest;
+    protected Location mLastLocation;
+
     private Position mCurrentPosition;
     private ArrayList<String> mSearchWordList;
     private int mRequestCount = 0;
+    public static final int REQUEST_LOCATION = 1;
 
     @Override
     protected void onCreate(Bundle savedInstanceState) {
@@ -55,19 +67,41 @@ public class MapsActivity extends AppCompatActivity
         mSearchWordList.add(sharedPrefereces.getString(getString(R.string.pref_search_word2_key), ""));
 
         setContentView(com.example.yaginuma.onetouchsearch.R.layout.activity_maps);
+
+        buildGoogleApiClient();
+
         SupportMapFragment mapFragment = (SupportMapFragment) getSupportFragmentManager()
                 .findFragmentById(com.example.yaginuma.onetouchsearch.R.id.map);
         mapFragment.getMapAsync(this);
     }
 
     @Override
+    protected void onStart() {
+        super.onStart();
+        mGoogleApiClient.connect();
+    }
+
+    @Override
+    protected void onPause() {
+        super.onPause();
+        if (mGoogleApiClient.isConnected()) {
+            stopLocationUpdates();
+        }
+    }
+
+    @Override
     protected void onResume() {
         super.onResume();
         mCurrentPosition.apply();
+
+        if (mGoogleApiClient.isConnected()) {
+            startLocationUpdates();
+        }
     }
 
     @Override
     protected void onStop() {
+        mGoogleApiClient.disconnect();
         super.onStop();
         mCurrentPosition.apply();
     }
@@ -122,7 +156,6 @@ public class MapsActivity extends AppCompatActivity
         Call<ResponseBody> searchCall1 = googlePlaceApiClient.textserach(mSearchWordList.get(0), mCurrentPosition.toString());
         searchCall1.enqueue(callback);
 
-        // NOTE: Currently, search words support only 2 words. If need support more words, this operation extra to method.
         if (!mSearchWordList.get(1).isEmpty()) {
             Call<ResponseBody> searchCall2 = googlePlaceApiClient.textserach(mSearchWordList.get(1), mCurrentPosition.toString());
             searchCall2.enqueue(callback);
@@ -153,5 +186,55 @@ public class MapsActivity extends AppCompatActivity
         mCurrentPosition.lat = location.getLatitude();
         mCurrentPosition.lng = location.getLongitude();
         mMapOperator.setCurrentPosMarkerToMap(mCurrentPosition);
+    }
+
+    @Override
+    public void onConnected(Bundle connectionHint) {
+        if (ActivityCompat.checkSelfPermission(this, Manifest.permission.ACCESS_FINE_LOCATION)
+                != PackageManager.PERMISSION_GRANTED) {
+            ActivityCompat.requestPermissions(this,
+                    new String[]{Manifest.permission.ACCESS_FINE_LOCATION}, REQUEST_LOCATION);
+        } else {
+            mLastLocation = LocationServices.FusedLocationApi.getLastLocation(mGoogleApiClient);
+        }
+        startLocationUpdates();
+    }
+
+    public void onConnectionFailed(ConnectionResult result) {
+        Log.e(TAG, "Connection failed: ConnectionResult.getErrorCode() = " + result.getErrorCode());
+    }
+
+    @Override
+    public void onConnectionSuspended(int cause) {
+        Log.i(TAG, "Connection suspended");
+        mGoogleApiClient.connect();
+    }
+
+    private synchronized void buildGoogleApiClient() {
+        mGoogleApiClient = new GoogleApiClient.Builder(this)
+                .addConnectionCallbacks(this)
+                .addOnConnectionFailedListener(this)
+                .addApi(LocationServices.API)
+                .build();
+        createLocationRequest();
+    }
+
+    private void createLocationRequest() {
+        mLocationRequest = new LocationRequest();
+        mLocationRequest.setInterval(5000);
+        mLocationRequest.setFastestInterval(2500);
+        mLocationRequest.setPriority(LocationRequest.PRIORITY_HIGH_ACCURACY);
+    }
+
+    private void startLocationUpdates() {
+        if (ActivityCompat.checkSelfPermission(this, Manifest.permission.ACCESS_FINE_LOCATION) != PackageManager.PERMISSION_GRANTED) {
+            ActivityCompat.requestPermissions(this, new String[]{Manifest.permission.ACCESS_FINE_LOCATION}, REQUEST_LOCATION);
+        } else {
+            LocationServices.FusedLocationApi.requestLocationUpdates(mGoogleApiClient, mLocationRequest, this);
+        }
+    }
+
+    private void stopLocationUpdates() {
+        LocationServices.FusedLocationApi.removeLocationUpdates(mGoogleApiClient, this);
     }
 }
