@@ -33,20 +33,22 @@ public class MapsActivity extends AppCompatActivity implements OnMapReadyCallbac
     public static final String TAG = MapsActivity.class.getSimpleName();
     private GoogleMap mMap;
     private GoogleMapOperator mMapOperator;
+    private int mRequestCount = 0;
     private ArrayList<String> mSearchWordList;
 
     @Override
     protected void onCreate(Bundle savedInstanceState) {
         super.onCreate(savedInstanceState);
 
-        mSearchWordList = new ArrayList<String>();
+        mSearchWordList = new ArrayList<>();
         SharedPreferences sharedPrefereces= PreferenceManager.getDefaultSharedPreferences(this);
-        String searhWord = sharedPrefereces.getString(getString(R.string.pref_search_word1_key), "");
-        if (searhWord.isEmpty())  {
+        mSearchWordList.add(sharedPrefereces.getString(getString(R.string.pref_search_word1_key), ""));
+        if (mSearchWordList.get(0).isEmpty())  {
             Intent settingIntent = new Intent(this, SettingsActivity.class);
             startActivity(settingIntent);
             return;
         }
+        mSearchWordList.add(sharedPrefereces.getString(getString(R.string.pref_search_word2_key), ""));
 
         setContentView(com.example.yaginuma.onetouchsearch.R.layout.activity_maps);
         SupportMapFragment mapFragment = (SupportMapFragment) getSupportFragmentManager()
@@ -68,9 +70,8 @@ public class MapsActivity extends AppCompatActivity implements OnMapReadyCallbac
         mMapOperator.moveCamera(position);
 
         GooglePlaceAPIClient googlePlaceApiClient = new GooglePlaceAPIClient(this);
-        Call<ResponseBody> call = googlePlaceApiClient.textserach("神社", position.toString());
 
-        call.enqueue(new Callback<ResponseBody>() {
+        Callback<ResponseBody> callback = new Callback<ResponseBody>() {
             @Override
             public void onResponse(Call<ResponseBody> call, Response<ResponseBody> response) {
                 if (response.isSuccessful()) {
@@ -83,8 +84,9 @@ public class MapsActivity extends AppCompatActivity implements OnMapReadyCallbac
                                 apiResult.getName(i),
                                 apiResult.getLat(i),
                                 apiResult.getLng(i),
-                                mMapOperator.getIcon(0)
+                                mMapOperator.getIcon(mRequestCount)
                             );
+                            mRequestCount++;
 
                         }
                     } catch (Exception e) {
@@ -101,7 +103,16 @@ public class MapsActivity extends AppCompatActivity implements OnMapReadyCallbac
                 Toast.makeText(getApplicationContext(), "error", Toast.LENGTH_SHORT).show();
                 Log.e(TAG, "textsearch get failure");
             }
-        });
+        };
+
+        Call<ResponseBody> searchCall1 = googlePlaceApiClient.textserach(mSearchWordList.get(0), position.toString());
+        searchCall1.enqueue(callback);
+
+        // NOTE: Currently, search words support only 2 words. If need support more words, this operation extra to method.
+        if (!mSearchWordList.get(1).isEmpty()) {
+            Call<ResponseBody> searchCall2 = googlePlaceApiClient.textserach(mSearchWordList.get(1), position.toString());
+            searchCall2.enqueue(callback);
+        }
     }
 
     @Override
