@@ -43,8 +43,10 @@ public class MapsActivity extends AppCompatActivity implements
     private GoogleMap mMap;
     private GoogleMapOperator mMapOperator;
     private GoogleApiClient mGoogleApiClient;
+    private GooglePlaceAPIClient mGooglePlaceApiClient;
     private LocationRequest mLocationRequest;
     private LocationSettingsRequest mLocationSettingsRequest;
+    private Boolean mDisplayedFlag = false;
     protected Location mLastLocation;
 
     private Position mCurrentPosition;
@@ -73,6 +75,7 @@ public class MapsActivity extends AppCompatActivity implements
         SupportMapFragment mapFragment = (SupportMapFragment) getSupportFragmentManager()
                 .findFragmentById(com.example.yaginuma.onetouchsearch.R.id.map);
         mapFragment.getMapAsync(this);
+        mGooglePlaceApiClient = new GooglePlaceAPIClient(this);
     }
 
     @Override
@@ -104,7 +107,9 @@ public class MapsActivity extends AppCompatActivity implements
     protected void onStop() {
         mGoogleApiClient.disconnect();
         super.onStop();
-        mCurrentPosition.apply();
+        if (mCurrentPosition != null) {
+            mCurrentPosition.apply();
+        }
     }
 
     @Override
@@ -118,9 +123,9 @@ public class MapsActivity extends AppCompatActivity implements
         mMapOperator = new GoogleMapOperator(mMap);
         mMapOperator.setCurrentPosMarkerToMap(mCurrentPosition);
         mMapOperator.moveCamera(mCurrentPosition);
+    }
 
-        GooglePlaceAPIClient googlePlaceApiClient = new GooglePlaceAPIClient(this);
-
+    private void searchPlaces() {
         Callback<ResponseBody> callback = new Callback<ResponseBody>() {
             @Override
             public void onResponse(Call<ResponseBody> call, Response<ResponseBody> response) {
@@ -159,11 +164,11 @@ public class MapsActivity extends AppCompatActivity implements
             }
         };
 
-        Call<ResponseBody> searchCall1 = googlePlaceApiClient.textserach(mSearchWordList.get(0), mCurrentPosition.toString());
+        Call<ResponseBody> searchCall1 = mGooglePlaceApiClient.textserach(mSearchWordList.get(0), mCurrentPosition.toString());
         searchCall1.enqueue(callback);
 
         if (!mSearchWordList.get(1).isEmpty()) {
-            Call<ResponseBody> searchCall2 = googlePlaceApiClient.textserach(mSearchWordList.get(1), mCurrentPosition.toString());
+            Call<ResponseBody> searchCall2 = mGooglePlaceApiClient.textserach(mSearchWordList.get(1), mCurrentPosition.toString());
             searchCall2.enqueue(callback);
         }
     }
@@ -192,6 +197,10 @@ public class MapsActivity extends AppCompatActivity implements
         mCurrentPosition.lat = location.getLatitude();
         mCurrentPosition.lng = location.getLongitude();
         mMapOperator.setCurrentPosMarkerToMap(mCurrentPosition);
+        if (!mDisplayedFlag) {
+            searchPlaces();
+            mDisplayedFlag = true;
+        }
     }
 
     @Override
