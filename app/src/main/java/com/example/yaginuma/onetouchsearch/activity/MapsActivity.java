@@ -39,7 +39,6 @@ import retrofit2.Response;
 public class MapsActivity extends AppCompatActivity implements
         OnMapReadyCallback, GoogleApiClient.ConnectionCallbacks, GoogleApiClient.OnConnectionFailedListener, LocationListener {
 
-    public static final String TAG = MapsActivity.class.getSimpleName();
     private GoogleMap mMap;
     private GoogleMapOperator mMapOperator;
     private GoogleApiClient mGoogleApiClient;
@@ -47,35 +46,33 @@ public class MapsActivity extends AppCompatActivity implements
     private LocationRequest mLocationRequest;
     private LocationSettingsRequest mLocationSettingsRequest;
     private Boolean mDisplayedFlag = false;
-    protected Location mLastLocation;
-
+    private Location mLastLocation;
     private Position mCurrentPosition;
     private ArrayList<String> mSearchWordList;
     private int mRequestCount = 0;
+
+    public static final String TAG = MapsActivity.class.getSimpleName();
     public static final int REQUEST_LOCATION = 1;
 
     @Override
     protected void onCreate(Bundle savedInstanceState) {
         super.onCreate(savedInstanceState);
 
-        mSearchWordList = new ArrayList<>();
-        SharedPreferences sharedPrefereces = PreferenceManager.getDefaultSharedPreferences(this);
-        mSearchWordList.add(sharedPrefereces.getString(getString(R.string.pref_search_word1_key), ""));
+        setSearchWordList();
         if (mSearchWordList.get(0).isEmpty()) {
             Intent settingIntent = new Intent(this, SettingsActivity.class);
             startActivity(settingIntent);
             return;
         }
-        mSearchWordList.add(sharedPrefereces.getString(getString(R.string.pref_search_word2_key), ""));
+
+        mCurrentPosition = new Position(this);
+        buildGoogleApiClient();
+        mGooglePlaceApiClient = new GooglePlaceAPIClient(this);
 
         setContentView(com.example.yaginuma.onetouchsearch.R.layout.activity_maps);
-
-        buildGoogleApiClient();
-
         SupportMapFragment mapFragment = (SupportMapFragment) getSupportFragmentManager()
                 .findFragmentById(com.example.yaginuma.onetouchsearch.R.id.map);
         mapFragment.getMapAsync(this);
-        mGooglePlaceApiClient = new GooglePlaceAPIClient(this);
     }
 
     @Override
@@ -87,19 +84,18 @@ public class MapsActivity extends AppCompatActivity implements
     }
 
     @Override
-    protected void onPause() {
-        super.onPause();
+    protected void onResume() {
+        super.onResume();
         if (mGoogleApiClient.isConnected()) {
-            stopLocationUpdates();
+            startLocationUpdates();
         }
     }
 
     @Override
-    protected void onResume() {
-        super.onResume();
-
+    protected void onPause() {
+        super.onPause();
         if (mGoogleApiClient.isConnected()) {
-            startLocationUpdates();
+            stopLocationUpdates();
         }
     }
 
@@ -115,7 +111,6 @@ public class MapsActivity extends AppCompatActivity implements
     @Override
     public void onMapReady(GoogleMap googleMap) {
         mMap = googleMap;
-        mCurrentPosition = new Position(this);
         if (mMap != null) {
             mMap.setIndoorEnabled(false);
         }
@@ -146,6 +141,7 @@ public class MapsActivity extends AppCompatActivity implements
                         mRequestCount++;
 
                         if (mRequestCount == mSearchWordList.size()) {
+                            // All load completion
                             Toast.makeText(getApplicationContext(), getString(R.string.msg_load_complete), Toast.LENGTH_LONG).show();
                         }
 
@@ -159,7 +155,7 @@ public class MapsActivity extends AppCompatActivity implements
 
             @Override
             public void onFailure(Call<ResponseBody> call, Throwable t) {
-                Toast.makeText(getApplicationContext(), "error", Toast.LENGTH_SHORT).show();
+                Toast.makeText(getApplicationContext(), "load error", Toast.LENGTH_SHORT).show();
                 Log.e(TAG, "textsearch API failured");
             }
         };
@@ -197,6 +193,7 @@ public class MapsActivity extends AppCompatActivity implements
         mCurrentPosition.lat = location.getLatitude();
         mCurrentPosition.lng = location.getLongitude();
         mMapOperator.setCurrentPosMarkerToMap(mCurrentPosition);
+
         if (!mDisplayedFlag) {
             mMapOperator.moveCamera(mCurrentPosition);
             searchPlaces();
@@ -252,5 +249,12 @@ public class MapsActivity extends AppCompatActivity implements
 
     private void stopLocationUpdates() {
         LocationServices.FusedLocationApi.removeLocationUpdates(mGoogleApiClient, this);
+    }
+
+    private void setSearchWordList() {
+        mSearchWordList = new ArrayList<>();
+        SharedPreferences sharedPrefereces = PreferenceManager.getDefaultSharedPreferences(this);
+        mSearchWordList.add(sharedPrefereces.getString(getString(R.string.pref_search_word1_key), ""));
+        mSearchWordList.add(sharedPrefereces.getString(getString(R.string.pref_search_word2_key), ""));
     }
 }
