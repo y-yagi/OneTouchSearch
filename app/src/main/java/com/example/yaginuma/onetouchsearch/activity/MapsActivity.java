@@ -195,9 +195,9 @@ public class MapsActivity extends AppCompatActivity implements
         mMapOperator.setCurrentPosMarkerToMap(mCurrentPosition);
 
         if (!mDisplayedFlag) {
-            mMapOperator.moveCamera(mCurrentPosition);
             searchPlaces();
             mDisplayedFlag = true;
+            mMapOperator.moveCamera(mCurrentPosition);
         }
     }
 
