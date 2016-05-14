@@ -198,6 +198,7 @@ public class MapsActivity extends AppCompatActivity implements
         mCurrentPosition.lng = location.getLongitude();
         mMapOperator.setCurrentPosMarkerToMap(mCurrentPosition);
         if (!mDisplayedFlag) {
+            mMapOperator.moveCamera(mCurrentPosition);
             searchPlaces();
             mDisplayedFlag = true;
         }
