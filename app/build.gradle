@@ -1,63 +1,33 @@
-buildscript {
-    dependencies {
-        repositories {
-            mavenCentral()
-            maven { url "https://oss.sonatype.org/content/repositories/snapshots" }
-        }
-
-        classpath "com.android.tools.build:gradle:1.0.0"
-        classpath "com.github.jcandksolutions.gradle:android-unit-test:2.1.1"
-        classpath 'org.robolectric:robolectric-gradle-plugin:0.14.+'
-    }
-}
-
-
 apply plugin: 'com.android.application'
 
 android {
-    compileSdkVersion 19
-    buildToolsVersion "20.0.0"
+    compileSdkVersion 23
+    buildToolsVersion "23.0.3"
 
     defaultConfig {
-        applicationId "xyz.yyagi.onetouchsearch"
-        minSdkVersion 16
-        targetSdkVersion 19
+        applicationId "com.example.yaginuma.onetouchsearch"
+        minSdkVersion 17
+        targetSdkVersion 23
         versionCode 1
         versionName "1.0"
+        resValue "string", "google_maps_key", "\"${project.property("googleMapsKey")}\""
+        resValue "string", "places_search_api_key", "\"${project.property("placesSearchAPIKey")}\""
     }
     buildTypes {
         release {
+            minifyEnabled false
             proguardFiles getDefaultProguardFile('proguard-android.txt'), 'proguard-rules.pro'
-            minifyEnabled true
-            shrinkResources true
-        }
-    }
-    sourceSets {
-        androidTest {
-            setRoot('src/test')
         }
     }
 }
-
-apply plugin: 'robolectric'
 
 dependencies {
-    compile 'com.google.android.gms:play-services:4.2.42'
-    compile 'com.android.support:appcompat-v7:20.+'
-    compile 'com.mcxiaoke.volley:library:1.0.5'
-    compile 'io.realm:realm-android:0.80.0'
-    compile 'com.github.hotchemi:ProgressMenuItem:0.3.3'
-    androidTestCompile "junit:junit:4.10"
-    androidTestCompile 'org.robolectric:robolectric:2.4'
-
-}
-
-robolectric {
-    include '**/*Test.class'
-
-    // configure whether failing tests should fail the build
-    ignoreFailures true
-    afterTest { descriptor, result ->
-        println "Executing test for {$descriptor.name} with result: ${result.resultType}"
-    }
+    compile fileTree(dir: 'libs', include: ['*.jar'])
+    testCompile 'junit:junit:4.12'
+    compile "com.android.support:appcompat-v7:${support_lib_version}"
+    compile "com.android.support:support-v4:${support_lib_version}"
+    compile "com.google.android.gms:play-services-maps:${play_services_lib_version}"
+    compile "com.google.android.gms:play-services-location:${play_services_lib_version}"
+    compile 'com.squareup.retrofit2:retrofit:2.0.2'
+    compile 'com.squareup.retrofit2:converter-gson:2.0.2'
 }

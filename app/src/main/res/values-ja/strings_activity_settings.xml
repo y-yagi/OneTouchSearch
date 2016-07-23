@@ -1,9 +1,0 @@
-<resources>
-    <string name="title_activity_settings">設定</string>
-    <!-- Strings related to Settings -->
-    <string name="pref_header_search">検索キーワード</string>
-    <string name="pref_header_search_detail">検索したいキーワードを設定して下さい。キーワードは2つまで設定可能です。</string>
-    <string name="pref_title_search_word1">検索キーワード1</string>
-    <string name="pref_title_search_word2">検索キーワード2</string>
-    <string name="pref_hint_search_word">検索したいキーワードを入力して下さい</string>
-</resources>

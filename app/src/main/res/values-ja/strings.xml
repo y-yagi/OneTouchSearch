@@ -1,11 +1,9 @@
-<?xml version="1.0" encoding="utf-8"?>
 <resources>
-    <string name="app_name">OneTouchSearch</string>
-    <string name="title_activity_main">OneTouchSearch</string>
-    <string name="action_settings">設定</string>
+    <string name="pref_header_search">検索キーワード</string>
+    <string name="pref_header_search_detail">検索したいキーワードを設定して下さい。キーワードは2つまで設定可能です。</string>
+    <string name="pref_title_search_word1">検索キーワード1</string>
+    <string name="pref_title_search_word2">検索キーワード2</string>
+    <string name="pref_hint_search_word">検索したいキーワードを入力して下さい</string>
 
-    <string name="error_location_setting">Location機能がOFFになっています。Location機能をONにして下さい。</string>
-    <string name="info_not_found">検索対象は見つかりませんでした。検索キーワード: </string>
-    <string name="info_load_completed">読み込みが完了しました</string>
-    <string name="info_loading">データ読み込み中…</string>
+    <string name="msg_load_complete">データの読み込みが完了しました</string>
 </resources>

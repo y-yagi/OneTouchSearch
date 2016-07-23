@@ -1,13 +1,15 @@
-<?xml version="1.0" encoding="utf-8"?>
 <resources>
     <string name="app_name">OneTouchSearch</string>
-    <string name="title_activity_main">OneTouchSearch</string>
-    <string name="action_settings">Settings</string>
+    <string name="title_activity_maps">OneTouchSearch</string>
+    <string name="title_activity_settings">Settings</string>
+    <string name="pref_search_word1_key" translatable="false">search_word1</string>
+    <string name="pref_search_word2_key" translatable="false">search_word2</string>
 
-    <string name="error_location_setting">Location function becomes OFF. Please turn on Location function.</string>
-    <string name="info_not_found">place that accorded was not found. keyword: </string>
-    <string name="info_load_completed">loading was completed</string>
-    <string name="info_loading">now loading…</string>
-    <string name="refresh">Refresh</string>
+    <string name="pref_header_search">Search Words</string>
+    <string name="pref_header_search_detail">Please set the keyword that you want to search. The keyword is setable to two.</string>
+    <string name="pref_title_search_word1">Search Word1</string>
+    <string name="pref_title_search_word2">Search Word2</string>
+    <string name="pref_hint_search_word">input the keyword that you want to search</string>
 
+    <string name="msg_load_complete">Load complete</string>
 </resources>
