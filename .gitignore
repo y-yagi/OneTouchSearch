@@ -39,3 +39,5 @@ Thumbs.db
 
 gradle.properties
 mockable-android-23.jar
+build/
+projectFilesBackup/
