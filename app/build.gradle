@@ -10,8 +10,13 @@ android {
         targetSdkVersion 25
         versionCode 1
         versionName "1.0"
-        resValue "string", "google_maps_key", "\"${project.property("googleMapsKey")}\""
-        resValue "string", "places_search_api_key", "\"${project.property("placesSearchAPIKey")}\""
+        if(project.hasProperty("googleMapsKey")) {
+            resValue "string", "google_maps_key", "\"${project.property("googleMapsKey")}\""
+            resValue "string", "places_search_api_key", "\"${project.property("placesSearchAPIKey")}\""
+        } else {
+            resValue "string", "google_maps_key", ""
+            resValue "string", "places_search_api_key", ""
+        }
     }
     buildTypes {
         release {
