@@ -2,7 +2,7 @@ apply plugin: 'com.android.application'
 
 android {
     compileSdkVersion 25
-    buildToolsVersion "23.0.3"
+    buildToolsVersion '25.0.0'
 
     defaultConfig {
         applicationId "com.example.yaginuma.onetouchsearch"
@@ -33,6 +33,6 @@ dependencies {
     compile "com.android.support:support-v4:${support_lib_version}"
     compile "com.google.android.gms:play-services-maps:${play_services_lib_version}"
     compile "com.google.android.gms:play-services-location:${play_services_lib_version}"
-    compile 'com.squareup.retrofit2:retrofit:2.1.0'
-    compile 'com.squareup.retrofit2:converter-gson:2.1.0'
+    compile 'com.squareup.retrofit2:retrofit:2.2.0'
+    compile 'com.squareup.retrofit2:converter-gson:2.2.0'
 }
